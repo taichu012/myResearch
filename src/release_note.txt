@@ -25,6 +25,9 @@ BUG0013:修复了inireader多个调用者用不同inifilename调用的冲突问�
 REQ0014：实现对github的源码推送，实现一个本地项目修改并推送到2个远端的git仓库（纯eclipse配置）
 https://github.com/taichu012/MyKafka.git
 https://git.oschina.net/taichu/MyKafka.git
+REQ0015：变更git仓库地址为如下：
+https://github.com/taichu012/MyResearch.git
+https://git.oschina.net/taichu/MyResearch.git
 
 
 
