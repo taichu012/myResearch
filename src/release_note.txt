@@ -62,6 +62,7 @@ TODOLIST:
 16.【OPEN】开发：kafka应该考虑支持linux（虽然是java屏蔽了大部分os差异，但是一般server运行在linux，换行回车，路径斜杠，等还是要仔细考虑
 17.【OPEN】开发：kafka集群的多台host（多个partition，多个producer，多个consumer等）的实践；
 18.【OPEN】测试：对topic下message的收，发作统计，来核对数目；
+19.【CLOSED】修改项目名字为myresearch，但是因为github无法修改projectname（git.oschina.net可以）所以另建项目。
 
 
 
