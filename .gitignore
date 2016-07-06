@@ -1,3 +1,6 @@
 /bin/
 /.classpath
 /.project
+/Consumer.log
+/MyKafkaDemo.log
+/Producer.log
