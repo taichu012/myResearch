@@ -112,6 +112,14 @@ H0003 关于网络IO堵塞
 	//对于非阻塞式的NIO，再研究！可以直接上框架netty
 	
 H0004 eclipse的快速格式化format快捷键是ctrl+shift+f，但经常和输入法冲突，当你关闭输入法才可以让这个快捷方式奇效！
+
+H0005 类型后面三个点(String...)，是从Java 5开始，Java语言对方法参数支持一种新写法，叫可变长度参数列表;
+      http://bbs.51cto.com/thread-1012690-1.html
+      
+      比如netty中的如下语句
+          public DelimiterBasedFrameDecoder(int maxFrameLength, ByteBuf... delimiters) {
+        this(maxFrameLength, true, delimiters);
+    }
 	  
 	  
 	  

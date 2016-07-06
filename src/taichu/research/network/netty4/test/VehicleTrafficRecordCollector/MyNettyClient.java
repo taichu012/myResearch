@@ -63,6 +63,7 @@ public final class MyNettyClient {
             b.group(group)
              .channel(NioSocketChannel.class)
              .option(ChannelOption.TCP_NODELAY, true)
+             .option(ChannelOption.SO_BACKLOG, 15)
              .handler(new ChannelInitializer<SocketChannel>() {
                  @Override
                  public void initChannel(SocketChannel ch) throws Exception {
@@ -74,13 +75,14 @@ public final class MyNettyClient {
                      
                      //解决TCP粘包问题,以"$_"作为分隔  
                      //获得协议接口指定的分隔符；
-                     byte[] delimiterBytes=IVehicleTrafficRecordLineBasedString.DelimiterAllowed.get("winos_r_n");
+                     byte[] delimiterBytes=IVehicleTrafficRecordLineBasedString.DelimiterBytesAllowed.get("win_r_n");
 //                     ByteBuf delimiter = Unpooled.copiedBuffer("$_".getBytes());  
                      ByteBuf delimiter = Unpooled.copiedBuffer(delimiterBytes);  
 
-                     //TODO:删除下面；除了对称的分隔符用于解码外，编码是自己加上分隔符的，netty框架并未帮你做！！！
-                     //p.addLast(new DelimiterBasedFrameDecoder(IVehicleTrafficRecord.MSG_LINE_MAX_LENGTH,delimiter));  
-                     //p.addLast(new StringDecoder());  
+                     //除了对称的分隔符用于解码外，编码是自己加上分隔符的，netty框架只负责根据分隔符分包！
+                     //TODO：尝试多个delimiter的情况；
+                     p.addLast(new DelimiterBasedFrameDecoder(IVehicleTrafficRecord.MSG_LINE_MAX_LENGTH,delimiter));  
+                     p.addLast(new StringDecoder());  
                      p.addLast(new MyNettyClientHandler());
                  }
              });

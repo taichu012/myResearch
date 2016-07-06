@@ -65,7 +65,7 @@ public final class MyNettyServer {
              .channel(NioServerSocketChannel.class)
              //what is BACKLOG(http://docs.oracle.com/javase/7/docs/api/java/net/ServerSocket.html#bind(java.net.SocketAddress,%20int))
              .option(ChannelOption.SO_BACKLOG, 15)
-//             .option(ChannelOption., 100)
+//             .option(ChannelOption.SO_BACKLOG, 100)
              .handler(new LoggingHandler(LogLevel.INFO))
              .childHandler(new ChannelInitializer<SocketChannel>() {
                  @Override
@@ -84,8 +84,8 @@ public final class MyNettyServer {
                      
                      //LineBasedFrameDecoder(int maxLength, boolean stripDelimiter, boolean failFast) 
                      //stripDelimiter=false就不会将分隔符去掉而让用户自己处理；
-                     //TODO：javadoc中API说对\n（MAX OS只有回车），\r\n(win是换行回车都有)会处理，
-                     //没说是否对\r（linux只有换行）做处理？
+                     //javadoc中API说对\n（linux只有回车），\r\n(win是换行回车都有)会处理，
+                     //但不会对\r（mac os只有换行）做处理
                      //调查：查看class（LineBasedFrameDecoder）的155行如下，的确没有处理单独用\r作为分解符的场景
                      //“private static int findEndOfLine(final ByteBuf buffer) {”
                      //http://netty.io/4.0/api/io/netty/handler/codec/LineBasedFrameDecoder.html
