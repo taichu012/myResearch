@@ -46,7 +46,9 @@ public class MyNettyClientHandler extends ChannelInboundHandlerAdapter {
     	
     	//TODO：将下面\n改为从reord协议接口取；并测试如果当个\r的情况是否会错误呢？
     	return "ClientMSG-"+currTimeMs
-    	+" @ "+F.GetF().getDateTimeFromCurrentTimeMillis(currTimeMs)+"\n";}
+    	+" @ "+F.GetF().getDateTimeFromCurrentTimeMillis(currTimeMs)
+    	+IVehicleTrafficRecordLineBasedString.DelimiterStringAllowed.get("win_r_n")+"我前面是rn，我后面是n！"
+    	+IVehicleTrafficRecordLineBasedString.DelimiterStringAllowed.get("linux_n");}
     
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
@@ -59,11 +61,11 @@ public class MyNettyClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
 //    	long syscode = F.GetF().bytesToLong(msg);
-    	System.out.println("Server Return syscode=["+msg+"]");
+//    	System.out.println("Server Return syscode=["+msg+"]");
     	//TODO:synCode can be inserted a map list for asynchronous produce!
     	String nextMsg = getNextMsg();
     	try {
-			Thread.sleep(1000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

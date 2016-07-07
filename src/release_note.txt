@@ -28,6 +28,8 @@ https://git.oschina.net/taichu/MyKafka.git
 REQ0015：变更git仓库地址为如下：
 https://github.com/taichu012/MyResearch.git
 https://git.oschina.net/taichu/MyResearch.git
+REQ0016:实现了基本的netty收发程序；实现了行结束符的添加和分包（frame）处理；
+REQ0017:修正了netty的lineBasedMessageDecoder不支持\r作为行结束符的bug；
 
 
 
@@ -55,7 +57,7 @@ TODOLIST:
 	官网：http://netty.io/wiki/user-guide-for-4.x.html
 	[tested]netty入门实例【极好！】（http://www.cnblogs.com/zhuawang/p/3849742.html）
 	[tested]netty举例【2013年，举例非常旧！】（http://lippeng.iteye.com/blog/1907279）
-	netty中的粘包和分包【极好】：http://m.blog.csdn.net/article/details?id=41122501
+	[tested]netty中的粘包和分包【极好】：http://m.blog.csdn.net/article/details?id=41122501
 	netty框架下server收着N个client，并可能主动发给client信息（一边server是被动接受client，而不是主动发信息给client）
 	http://m.blog.csdn.net/article/details?id=49073557
 	
@@ -63,6 +65,9 @@ TODOLIST:
     netty怎么控制client没有妥善关闭socket，没有结束符号的超时处理？
     Netty系列之Netty百万级推送服务设计要点（http://www.cnblogs.com/zhuawang/p/4204366.html）
     netty异步NIO的udp数据包启动配置DatagramChannel参数（http://blog.163.com/linfenliang@126/blog/static/12785719520121074486487/）
+    netty如果增加server和client的处理线程数？控制线程数？（现在从jvisualvm或jconsole中看到client，server的BACKLOG并不起作用）
+    netty尝试编解码http/url信令
+    
 13.【OPEN】看是否借鉴以前的unioss的一些控制？比如结束，SSL，stringSocket等？
 14.【CLOSED】IDE：jdk的class带着源码，可以直接查看；
 15.【CLOSED】IDE：查看第三方lib库的源码（点击类触发找不到class后，可选择带source的jar包）和javadoc（在build中lib中选择某个点开添加source和javadoc）
@@ -112,6 +117,14 @@ H0003 关于网络IO堵塞
 	//对于非阻塞式的NIO，再研究！可以直接上框架netty
 	
 H0004 eclipse的快速格式化format快捷键是ctrl+shift+f，但经常和输入法冲突，当你关闭输入法才可以让这个快捷方式奇效！
+
+H0005 类型后面三个点(String...)，是从Java 5开始，Java语言对方法参数支持一种新写法，叫可变长度参数列表;
+      http://bbs.51cto.com/thread-1012690-1.html
+      
+      比如netty中的如下语句
+          public DelimiterBasedFrameDecoder(int maxFrameLength, ByteBuf... delimiters) {
+        this(maxFrameLength, true, delimiters);
+    }
 	  
 	  
 	  

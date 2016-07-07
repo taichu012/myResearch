@@ -27,13 +27,20 @@ import taichu.research.tool.F;
  */
 @Sharable
 public class MyNettyServerHandler extends ChannelInboundHandlerAdapter {
+	
+	private volatile long firstCallTime=System.currentTimeMillis();
+	private volatile int gotMsgCount=0;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    	gotMsgCount++;
+    	
     	System.out.println("==============channel-read==============");
     	System.out.println(msg.toString());
 //    	ctx.write(msg);
-    	ByteBuf resp = Unpooled.copiedBuffer(F.GetF().longToBytes(System.currentTimeMillis())); 
+    	String serverResponse=Long.toString(System.currentTimeMillis());
+    	serverResponse +=IVehicleTrafficRecordLineBasedString.DelimiterStringAllowed.get("win_r_n");
+    	ByteBuf resp = Unpooled.copiedBuffer(serverResponse.getBytes()); 
     	ctx.writeAndFlush(resp);
     }
 
@@ -65,6 +72,7 @@ public class MyNettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         System.out.println("==============channel-unregister==============");
+        printStat();
     }
 
     @Override
@@ -75,5 +83,15 @@ public class MyNettyServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("==============channel-inactive==============");
+        printStat();
     }
+    
+    private void printStat(){
+    	long currentTime=System.currentTimeMillis();
+    	long deltaTime=currentTime-firstCallTime;
+    	System.out.println("Totcal got MSG=" + gotMsgCount+", spent="+(deltaTime)/1000+"秒, AVG="
+    			+ gotMsgCount*1000/deltaTime + "CAPS");
+    	
+    }
+    
 }
