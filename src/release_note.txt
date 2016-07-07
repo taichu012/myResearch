@@ -104,7 +104,7 @@ H0003 关于网络IO堵塞
 	//也会因为最后没有获得约定的结束标记而永远阻塞；
 	//如果为socket设定了accept的timeout，则会收到SocketTimeoutException而供你处置，
 	//如果你不主动结束socket，即使抛出超时异常，socket依然阻塞！
-	//windows下是先回车后换行（\r\n，或13,10，在jmeter里面可以设定E0L），MAC OS是回车，Linux是换行
+	//windows下是先回车后换行（\r\n，或13,10，在jmeter里面可以设定E0L），MAC OS是换行\r，Linux是回车\n
 	//工具jmeter的tcpsample默认一行之后会自动添加回车换行符，便于对端socket的readline捕获回车或换行
 	//但是因为阻塞网络IO没有协商结束标记，所以只要TCP socket开着，而网络无字节/字符流量，就一直在read阻塞
 	//所以必须协商结束符比如"<EOF>"等作为flag。
