@@ -1,18 +1,3 @@
-/*
- * Copyright 2012 The Netty Project
- *
- * The Netty Project licenses this file to you under the Apache License,
- * version 2.0 (the "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
- */
 package taichu.research.network.netty4.test.VehicleTrafficRecordCollector;
 
 import io.netty.bootstrap.ServerBootstrap;
@@ -37,7 +22,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.CharsetUtil;
 
 /**
- * Echoes back any received data from a client.
+ * 从client获取数据，解析并显示，完成后返回response到client.
  */
 public final class MyNettyServer {
 	
@@ -75,27 +60,27 @@ public final class MyNettyServer {
                          p.addLast(sslCtx.newHandler(ch.alloc()));
                      }
 
-//                     //解决TCP粘包问题,以"$_"作为分隔  
-//                     String delimiterStr = IVehicleTraffiecRecordDelimiterBasedString.DelimiterAllowedString;
-//                     ByteBuf delimiter = Unpooled.copiedBuffer(delimiterStr.getBytes());  
-//                     p.addLast(new DelimiterBasedFrameDecoder(1024,delimiter));  
 
-                  // Decoders added as with order
+                     //设定channel inbound pipeline，按allLast添加的顺序处理；
+                     //先解析client发来的line based消息（line frame分包），再将byte[]组成string，提供给handler
                      
-                     //LineBasedFrameDecoder(int maxLength, boolean stripDelimiter, boolean failFast) 
-                     //stripDelimiter=false就不会将分隔符去掉而让用户自己处理；
-                     //javadoc中API说对\n（linux只有回车），\r\n(win是换行回车都有)会处理，
-                     //但不会对\r（mac os只有换行）做处理
-                     //调查：查看class（LineBasedFrameDecoder）的155行如下，的确没有处理单独用\r作为分解符的场景
-                     //“private static int findEndOfLine(final ByteBuf buffer) {”
+                     // Decoders added as with order
+                     
                      //http://netty.io/4.0/api/io/netty/handler/codec/LineBasedFrameDecoder.html
-                     p.addLast("frameDecoder",new LineBasedFrameDecoder(IVehicleTrafficRecord.MSG_LINE_MAX_LENGTH
-                    		 ,false,false));
+
+                     //client发来的msg是line based，分界符可能是三种OS的，所以都尝试处理；
+                     ByteBuf delimiter_win = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForWin());
+                     ByteBuf delimiter_linux = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForLinux());
+                     ByteBuf delimiter_mac = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForMac());
+
+                     p.addLast(new DelimiterBasedFrameDecoder(IVehicleTrafficRecord.MSG_LINE_MAX_LENGTH,
+                    		 true,false,delimiter_win,delimiter_linux,delimiter_mac));  
+
                      
                      //Decodes a received ByteBuf into a String. Please note that this decoder 
 //                     must be used with a proper ByteToMessageDecoder such as DelimiterBasedFrameDecoder 
 //                     or LineBasedFrameDecoder if you are using a stream-based transport such as TCP/IP. 
-                     //作用，将上一个decoder通过分隔符返回的bytes组装成string，否则输出的是不可用的信息！
+                     //作用，将上一个decoder通过分隔符返回的bytes组装成string，否则输出的是不可视的字节信息！
                      p.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
                      
                      //p.addLast(new LoggingHandler(LogLevel.INFO));

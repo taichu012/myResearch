@@ -1,0 +1,12 @@
+----------------------
+【TEST1】
+时间：20160707-17:02
+结果：
+Total got MSG=6000001, spent=1476秒, AVG=1155CAPS
+MSG sent successful:6000001, MSG sent bad:0, MSG received successful:6000001, MSG received bad:0
+说明：
+1.client发起消息，传输一条给server等server反馈后再发下一条。同步模式，并非异步；
+2.开启了client和server的netty的BACKLOG=15，但似乎没用到这么多线程？可能是没实际用上，需要详查，并用jconsole等查看；
+3.CPU：I5-4200u4核 主频2.3GHZ，2核4线程；8GBHZ内存1600MHZ；百兆网卡；
+
+----------------------

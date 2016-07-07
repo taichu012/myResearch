@@ -1,18 +1,3 @@
-/*
- * Copyright 2012 The Netty Project
- *
- * The Netty Project licenses this file to you under the Apache License,
- * version 2.0 (the "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at:
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
- */
 package taichu.research.network.netty4.test.VehicleTrafficRecordCollector;
 
 import io.netty.buffer.ByteBuf;
@@ -23,25 +8,51 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import taichu.research.tool.F;
 
 /**
- * Handler implementation for the echo server.
+ * Handler implementation for the server.
  */
 @Sharable
 public class MyNettyServerHandler extends ChannelInboundHandlerAdapter {
 	
 	private volatile long firstCallTime=System.currentTimeMillis();
-	private volatile int gotMsgCount=0;
+	
+    private volatile int badMsgReceivedCount=0;
+    private volatile int goodMsgReceivedCount=0;
+    private volatile int goodMsgSentCount=0;
+    private volatile int badMsgSendCount=0;
+    //由client控制发送数目来测试，server不控制，被动接受。
+    //private volatile int MAX_SEND_MSG=50000;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-    	gotMsgCount++;
+    	if (msg == null||"".equals(msg)) {
+    		System.out.println("Got null msg!");
+    		badMsgReceivedCount++;
+    		return;
+    	}else {
+    		goodMsgReceivedCount++;
+    	}
     	
     	System.out.println("==============channel-read==============");
     	System.out.println(msg.toString());
-//    	ctx.write(msg);
-    	String serverResponse=Long.toString(System.currentTimeMillis());
-    	serverResponse +=IVehicleTrafficRecordLineBasedString.DelimiterStringAllowed.get("win_r_n");
-    	ByteBuf resp = Unpooled.copiedBuffer(serverResponse.getBytes()); 
-    	ctx.writeAndFlush(resp);
+
+    	//send response back to client
+    	//append line based 分界符
+    	String response = getResponse();
+    	if(response==null||"".equals(response)){
+    		badMsgSendCount++;
+    	}else {
+    		ByteBuf resp = Unpooled.copiedBuffer(response.getBytes()); 
+    		ctx.writeAndFlush(resp);
+    	   	goodMsgSentCount++;
+    	}
+    	
+    }
+    
+    private String getResponse(){
+    	long currTimeMs=System.currentTimeMillis();
+    	return "Server.sendtime.ms=["+currTimeMs
+    	+"]=["+F.GetF().getDateTimeFromCurrentTimeMillis(currTimeMs)+"]"
+    	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>."+Delimiters.getLineDelimiterStrForWin();
     }
 
     @Override
@@ -55,42 +66,56 @@ public class MyNettyServerHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
         cause.printStackTrace();
+        printStat();
         ctx.close();
     }
     
     @Override
     public boolean isSharable() {
         System.out.println("==============handler-sharable==============");
+        //TODO：此函数的用处和场景是什么？
         return super.isSharable();
     }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         System.out.println("==============channel-register==============");
+        //TODO：推断在client连接上来后，就初始化一个channel并注册，等client关闭后，channel自动注销；
+        System.out.println("Create instance of MyNettyServerHandler at: "+firstCallTime);
+        firstCallTime=System.currentTimeMillis();
+        System.out.println("channel-register at: "+firstCallTime);
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         System.out.println("==============channel-unregister==============");
         printStat();
+        System.out.println("channel-unregister at: "+System.currentTimeMillis());
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("==============channel-active==============");
+        //TODO：需要调查如果idle事件后，是否会在收到msg时重新再次avtive激活？推断理应如此。
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         System.out.println("==============channel-inactive==============");
-        printStat();
+//        printStat();
     }
     
     private void printStat(){
     	long currentTime=System.currentTimeMillis();
     	long deltaTime=currentTime-firstCallTime;
-    	System.out.println("Totcal got MSG=" + gotMsgCount+", spent="+(deltaTime)/1000+"秒, AVG="
-    			+ gotMsgCount*1000/deltaTime + "CAPS");
+    	System.out.println("Total got MSG=" + goodMsgReceivedCount+", spent="+(deltaTime)/1000+"秒, AVG="
+    			+ goodMsgReceivedCount*1000/deltaTime + "CAPS");
+    	
+    	System.out.println("MSG sent successful:" + goodMsgSentCount
+    			+", MSG sent bad:"+ badMsgSendCount
+    			+", MSG received successful:"+ goodMsgReceivedCount
+    			+", MSG received bad:"+badMsgReceivedCount);
+    	
     	
     }
     

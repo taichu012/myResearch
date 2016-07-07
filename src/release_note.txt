@@ -30,6 +30,7 @@ https://github.com/taichu012/MyResearch.git
 https://git.oschina.net/taichu/MyResearch.git
 REQ0016:实现了基本的netty收发程序；实现了行结束符的添加和分包（frame）处理；
 REQ0017:修正了netty的lineBasedMessageDecoder不支持\r作为行结束符的bug；
+REQ0018：实现了基本的过车记录消息收发的测试项目及框架（方便以后扩展为实际项目）
 
 
 
@@ -67,13 +68,14 @@ TODOLIST:
     netty异步NIO的udp数据包启动配置DatagramChannel参数（http://blog.163.com/linfenliang@126/blog/static/12785719520121074486487/）
     netty如果增加server和client的处理线程数？控制线程数？（现在从jvisualvm或jconsole中看到client，server的BACKLOG并不起作用）
     netty尝试编解码http/url信令
+    netty的超时timeout处理
     
 13.【OPEN】看是否借鉴以前的unioss的一些控制？比如结束，SSL，stringSocket等？
 14.【CLOSED】IDE：jdk的class带着源码，可以直接查看；
 15.【CLOSED】IDE：查看第三方lib库的源码（点击类触发找不到class后，可选择带source的jar包）和javadoc（在build中lib中选择某个点开添加source和javadoc）
 16.【OPEN】开发：kafka应该考虑支持linux（虽然是java屏蔽了大部分os差异，但是一般server运行在linux，换行回车，路径斜杠，等还是要仔细考虑
 17.【OPEN】开发：kafka集群的多台host（多个partition，多个producer，多个consumer等）的实践；
-18.【OPEN】测试：对topic下message的收，发作统计，来核对数目；
+18.【CLOSED】测试：对topic下message的收，发作统计，来核对数目；
 19.【CLOSED】修改项目名字为myresearch，但是因为github无法修改projectname（git.oschina.net可以）所以另建项目。
 
 
@@ -125,6 +127,8 @@ H0005 类型后面三个点(String...)，是从Java 5开始，Java语言对方�
           public DelimiterBasedFrameDecoder(int maxFrameLength, ByteBuf... delimiters) {
         this(maxFrameLength, true, delimiters);
     }
+    
+H0006: java不允许只有返回值不同（函数名和参数表都一样）的成员函数存在！
 	  
 	  
 	  
