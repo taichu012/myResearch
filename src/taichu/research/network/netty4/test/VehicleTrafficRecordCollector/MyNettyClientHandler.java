@@ -11,11 +11,11 @@ import taichu.research.tool.F;
  */
 public class MyNettyClientHandler extends ChannelInboundHandlerAdapter {
 
-    private volatile int badMsgReceivedCount=0;
-    private volatile int goodMsgReceivedCount=0;
-    private volatile int goodMsgSentCount=0;
-    private volatile int badMsgSendCount=0;
-    private volatile int MAX_SEND_MSG=6000000;
+    private int badMsgReceivedCount=0;
+    private int goodMsgReceivedCount=0;
+    private int goodMsgSentCount=0;
+    private int badMsgSendCount=0;
+    private static  int MAX_SEND_MSG=6000000;
 
     /**
      * Creates a client-side handler.

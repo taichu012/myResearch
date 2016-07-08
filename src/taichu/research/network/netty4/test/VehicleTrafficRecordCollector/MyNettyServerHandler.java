@@ -15,10 +15,10 @@ public class MyNettyServerHandler extends ChannelInboundHandlerAdapter {
 	
 	private volatile long firstCallTime=System.currentTimeMillis();
 	
-    private volatile int badMsgReceivedCount=0;
-    private volatile int goodMsgReceivedCount=0;
-    private volatile int goodMsgSentCount=0;
-    private volatile int badMsgSendCount=0;
+    private int badMsgReceivedCount=0;
+    private int goodMsgReceivedCount=0;
+    private int goodMsgSentCount=0;
+    private int badMsgSendCount=0;
     //由client控制发送数目来测试，server不控制，被动接受。
     //private volatile int MAX_SEND_MSG=50000;
 

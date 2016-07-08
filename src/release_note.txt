@@ -31,6 +31,7 @@ https://git.oschina.net/taichu/MyResearch.git
 REQ0016:实现了基本的netty收发程序；实现了行结束符的添加和分包（frame）处理；
 REQ0017:修正了netty的lineBasedMessageDecoder不支持\r作为行结束符的bug；
 REQ0018：实现了基本的过车记录消息收发的测试项目及框架（方便以后扩展为实际项目）
+REQ0019:增加了对PI计算的代码，在math这个pacakge中；
 
 
 
