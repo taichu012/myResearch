@@ -78,7 +78,8 @@ TODOLIST:
 17.【OPEN】开发：kafka集群的多台host（多个partition，多个producer，多个consumer等）的实践；
 18.【CLOSED】测试：对topic下message的收，发作统计，来核对数目；
 19.【CLOSED】修改项目名字为myresearch，但是因为github无法修改projectname（git.oschina.net可以）所以另建项目。
-
+20. 【OPEN】关于PI的计算，可以考虑用要给和标准PI的百分比差，或绝对值差来不断调整算法的迭代次数，自动的选择往差delta变小的地方走，有点像深度学习或神经网络
+    的梯度下降算法，但可能会有多个极值。这要看PI的无穷级数生成式是否为单调逼近？还是穿透？还是发散？等等！
 
 
 

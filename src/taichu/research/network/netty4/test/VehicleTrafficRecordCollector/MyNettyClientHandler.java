@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import taichu.research.tool.F;
+import taichu.research.tool.T;
 
 /**
  * 实现消息的处理
@@ -28,14 +28,14 @@ public class MyNettyClientHandler extends ChannelInboundHandlerAdapter {
 
 //    	//以下包含三种OS的不同行结束分界符，用来测试，结果符合预期。实测其他功能时，最好来回消息一一对应，不要1对N，不方便观察。
 //    	return "Client.sendtime.ms=["+currTimeMs
-//    	+"]=["+F.GetF().getDateTimeFromCurrentTimeMillis(currTimeMs)+"]"
+//    	+"]=["+T.GetF().getDateTimeFromCurrentTimeMillis(currTimeMs)+"]"
 //    	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>."+Delimiters.getLineDelimiterStrForWin()
 //    	+"本行以   n结尾<如能解析为单独一行则说明   n被正确的用于行分解符了！>："+Delimiters.getLineDelimiterStrForLinux()
 //    	+"本行以   r结尾<如能解析为单独一行则说明   r被正确的用于行分解符了！>："+Delimiters.getLineDelimiterStrForMac()
 //    	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>："+Delimiters.getLineDelimiterStrForWin();}
     	
     	return "Client.sendtime.ms=["+currTimeMs
-    	+"]=["+F.GetF().getDateTimeFromCurrentTimeMillis(currTimeMs)+"]"
+    	+"]=["+T.getT().getDateTimeFromCurrentTimeMillis(currTimeMs)+"]"
     	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>."+Delimiters.getLineDelimiterStrForWin();
     	}
     
@@ -61,7 +61,7 @@ public class MyNettyClientHandler extends ChannelInboundHandlerAdapter {
 
     	//经过INBOUND处理链上先后的分包和string化，根据协议，server返回的时间ms可直接作为string打印；
 //    	System.out.println("Server.sendtime.ms=["+msg+"]=["
-//    	+F.GetF().getDateTimeFromCurrentTimeMillis(Long.parseLong((String) msg))+"]");
+//    	+T.GetF().getDateTimeFromCurrentTimeMillis(Long.parseLong((String) msg))+"]");
     	System.out.println(msg.toString());
     	
     	

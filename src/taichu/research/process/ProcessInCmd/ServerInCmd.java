@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 import kafka.security.auth.Write;
 import taichu.research.bigdata.kafka.test.IExitHandling;
-import taichu.research.tool.F;
+import taichu.research.tool.T;
 import taichu.research.tool.IniReader;
 
 /**
@@ -109,7 +109,7 @@ public class ServerInCmd implements Runnable, IExitHandling {
 		} finally {
 			if (p != null) {
 				p.destroy();
-				System.out.println("Process [PID=" + F.GetF().GetPIDWithDomain() + "] is destoried!");
+				System.out.println("Process [PID=" + T.getT().GetPIDWithDomain() + "] is destoried!");
 			}
 			System.out.println("If goes here, thread-[" + Thread.currentThread().getName() + "|"
 					+ Thread.currentThread().getId() + "] stopped after his son(process) is finished.");

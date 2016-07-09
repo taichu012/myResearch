@@ -12,7 +12,7 @@ import java.net.SocketTimeoutException;
 
 import org.apache.log4j.Logger;
 
-import taichu.research.tool.F;
+import taichu.research.tool.T;
 
 /**
  * 功能说明：执行具体业务的线程
