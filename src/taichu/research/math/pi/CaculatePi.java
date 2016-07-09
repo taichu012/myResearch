@@ -21,16 +21,16 @@ public class CaculatePi {
 	public static void main(String[] args) {
 		System.out.println("PI=3.14159265358979323846[真实]");
 		initCaculatePi();
-//		 testAllAlg();
-		 testOneAlg("algorithmGenPi9");
+		 testAllAlg();
+//		 testOneAlg("algorithmGenPi9");
 
 	}
 
 	public static void testOneAlg(String key) {
 		String value = algMap.get(key);
-		int max = 500000;
-		int max_real =5000000;
-		int delta = 500000;
+		int max = 5000;
+		int max_real =50000;
+		int delta = 5000;
 		Class<?> clazz = T.getT().reflect.getClazz("taichu.research.math.pi.CaculatePi");
 		Object obj=T.getT().reflect.getObject(clazz);
 		Method m = T.getT().reflect.getMethod(clazz,key,new Class<?>[]{Integer.class});
@@ -53,8 +53,8 @@ public class CaculatePi {
 
 	public static void initCaculatePi() {
 		// hashmap按照一定算法來放入key value对，所以枚举返回的时候也是这个次序，而不是添加的次序。
-		algMap.put("algorithmGenPi1", "π=4/1-4/3+4/5-4/7+...");
-		algMap.put("algorithmGenPi5", "π/4=1-1/3+1/5-1/7+.");
+		algMap.put("algorithmGenPi1", "π/4=1/1-1/3+1/5-1/7+...");
+		algMap.put("algorithmGenPi5", "xxxxxxxxxxxxxxxxx...");
 		algMap.put("algorithmGenPi4", "π²/24=1+1/2²+1/4²+1/6²+.");
 		algMap.put("algorithmGenPi3", "π²/8=1+1/3²+1/5²+1/7²+.");
 		algMap.put("algorithmGenPi2", "π²/6=1+1/2²+1/3²+1/4²+.");
@@ -78,14 +78,15 @@ public class CaculatePi {
 
 	}
 
-	// TODO:待确认是否公式正确？好像公式错误，明显等式右面收敛于1；
+	// 
 	// π³/32=1-1/3³+1/5³-1/7³+.（CC：有正负交替项，暂无通项） .
 	public static double algorithmGenPi9(Integer iterTimes) {
 		double tmp = 0.0d;
 		for (int i = 1; i <= iterTimes; i++) {
 			tmp += Math.pow(-1, i + 1) / Math.pow((2 * i - 1), 3);
 		}
-		return Math.pow(tmp * 32, 1/3);
+		//求立方根公式！
+		return Math.cbrt(tmp*32);
 	}
 
 	// NOTICE：公式在一定范围内逼近PI，超过则严重发散！这是不是说它在逼近PI的时候就更快？更陡？TODO：待研究；
@@ -122,13 +123,13 @@ public class CaculatePi {
 		return Math.sqrt(tmp * 12);
 	}
 
-	// π=4/1-4/3+4/5-4/7+. （CC： 通项为1/n^2）
+	// π/4=1/1-1/3+1/5-1/7+. （CC： 通项为1/n^2）
 	public static double algorithmGenPi1(Integer iterTimes) {
 		double pi = 0.0d;
 		for (int i = 1; i <= iterTimes; i++) {
-			pi += Math.pow(-1, (i + 1)) * 4 / (2 * i - 1);
+			pi += Math.pow(-1,(i+1))/(2*i-1);
 		}
-		return pi;
+		return pi*4;
 	}
 
 	// π²/6=1+1/2²+1/3²+1/4²+. （CC： 通项为1/n^2）
@@ -158,13 +159,25 @@ public class CaculatePi {
 		return Math.sqrt(tmp * 24);
 	}
 
-	// π/4=1-1/3+1/5-1/7+.
+	//
+	//
 	public static double algorithmGenPi5(Integer iterTimes) {
-		double tmp = 0.0d;
-		for (int i = 1; i <= iterTimes; i++) {
-			tmp += Math.pow(-1, (i + 1)) * 1 / (2 * i - 1);
-		}
-		return tmp * 4;
+//		double tmp = 0.0d;
+//		for (int i = 1; i <= iterTimes; i++) {
+//			tmp += Math.pow(-1,i-1)/(2*i);
+//		}
+//		double delta=100.0d;
+//		for (int i=1;i<=100;i++){
+//			for (int j=1;j<=100;j++){
+//				double result=i/j*tmp;
+//				if (delta>Math.abs(PI_PUBLIC-result)){
+//					delta=Math.abs(PI_PUBLIC-result);
+//					System.out.println(i+"*"+j+"="+result);
+//				}
+//			}
+//		}
+//		
+		return 0;
 	}
 
 	/*
