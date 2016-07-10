@@ -55,7 +55,7 @@ public class CaculatePi {
 		// hashmap按照一定算法來放入key value对，所以枚举返回的时候也是这个次序，而不是添加的次序。
 		algMap.put("algorithmGenPi1", "π/4=1/1-1/3+1/5-1/7+...");
 		algMap.put("algorithmGenPi5", "xxxxxxxxxxxxxxxxx...");
-		algMap.put("algorithmGenPi4", "π²/24=1+1/2²+1/4²+1/6²+.");
+		algMap.put("algorithmGenPi4", "π²/24=1/2²+1/4²+1/6²+.");
 		algMap.put("algorithmGenPi3", "π²/8=1+1/3²+1/5²+1/7²+.");
 		algMap.put("algorithmGenPi2", "π²/6=1+1/2²+1/3²+1/4²+.");
 		algMap.put("algorithmGenPi6", "π²/12=1-1/2²+1/3²-1/4²+.");
@@ -150,7 +150,7 @@ public class CaculatePi {
 		return Math.sqrt(tmp * 8);
 	}
 
-	// π²/24=1+1/2²+1/4²+1/6²+. （CC：通项为1/(2n-1)^2）
+	// π²/24=1/2²+1/4²+1/6²+. （CC：通项为1/(2n-1)^2）
 	public static double algorithmGenPi4(Integer iterTimes) {
 		double tmp = 0.0d;
 		for (int i = 1; i <= iterTimes; i++) {

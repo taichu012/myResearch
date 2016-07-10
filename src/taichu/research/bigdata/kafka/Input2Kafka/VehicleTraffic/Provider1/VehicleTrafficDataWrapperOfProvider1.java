@@ -26,5 +26,5 @@ public class VehicleTrafficDataWrapperOfProvider1 implements IDataTransform2Kafk
 		//return without changed for testing
 		return msg;
 	}
-
+	
 }
