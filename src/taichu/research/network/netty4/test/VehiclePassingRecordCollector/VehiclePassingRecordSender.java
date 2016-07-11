@@ -61,6 +61,8 @@ public final class VehiclePassingRecordSender {
              .channel(NioSocketChannel.class)
              .option(ChannelOption.TCP_NODELAY, true)
              .option(ChannelOption.SO_BACKLOG, 15) //TODO:待研究
+             //netty框架的 keepAlive属性，不能设置间隔，会采用系统默认的配置2小时，程序里怎么自己设置？TODO：
+             .option(ChannelOption.SO_KEEPALIVE, true)
              .handler(new ChannelInitializer<SocketChannel>() {
                  @Override
                  public void initChannel(SocketChannel ch) throws Exception {

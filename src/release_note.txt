@@ -68,8 +68,10 @@ TODOLIST:
     Netty系列之Netty百万级推送服务设计要点（http://www.cnblogs.com/zhuawang/p/4204366.html）
     netty异步NIO的udp数据包启动配置DatagramChannel参数（http://blog.163.com/linfenliang@126/blog/static/12785719520121074486487/）
     netty如果增加server和client的处理线程数？控制线程数？（现在从jvisualvm或jconsole中看到client，server的BACKLOG并不起作用）
-    netty尝试编解码http/url信令
+    netty尝试编解码http/url信令 http://www.cnblogs.com/luxiaoxun/p/3959450.html
     netty的超时timeout处理
+    
+       基于netty4的TCP短连接测试  http://blog.163.com/linfenliang@126/blog/static/1278571952013721101340165/
     
 13.【OPEN】看是否借鉴以前的unioss的一些控制？比如结束，SSL，stringSocket等？
 14.【CLOSED】IDE：jdk的class带着源码，可以直接查看；
