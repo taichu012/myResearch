@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.test.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.VehiclePassingRecordCollector;
 
 import org.apache.log4j.Logger;
 

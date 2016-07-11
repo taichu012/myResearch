@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.test.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.test;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -10,7 +10,7 @@ import taichu.research.tool.T;
 /**
  * 实现消息的处理
  */
-public class VehiclePassRecordHandler extends ChannelInboundHandlerAdapter {
+public class MyNettyClientHandler extends ChannelInboundHandlerAdapter {
 
     private int badMsgReceivedCount=0;
     private int goodMsgReceivedCount=0;
@@ -21,7 +21,7 @@ public class VehiclePassRecordHandler extends ChannelInboundHandlerAdapter {
     /**
      * Creates a client-side handler.
      */
-    public VehiclePassRecordHandler() {    }
+    public MyNettyClientHandler() {    }
 
     //准备以当前时间为主的不断变化的字符串
     private String getNextMsg() { 

@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.test.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.VehiclePassingRecordCollector;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -20,8 +20,8 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.CharsetUtil;
-import taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
-import taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
 import taichu.research.tool.Delimiters;
 
 /**
@@ -66,6 +66,7 @@ public final class VehiclePassingRecordReceiver {
              .channel(NioServerSocketChannel.class)
              //what is BACKLOG(http://docs.oracle.com/javase/7/docs/api/java/net/ServerSocket.html#bind(java.net.SocketAddress,%20int))
              .option(ChannelOption.SO_BACKLOG, 15)
+             //netty框架的 keepAlive属性，不能设置间隔，会采用系统默认的配置2小时，程序里可进一步在应用层设定
              .childOption(ChannelOption.SO_KEEPALIVE, true)
 //             .handler(new LoggingHandler(LogLevel.INFO))
              .childHandler(new ChannelInitializer<SocketChannel>() {

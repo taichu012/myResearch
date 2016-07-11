@@ -1,7 +1,7 @@
 /**
  * 
  */
-package taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity;
+package taichu.research.network.netty4.VehiclePassingRecordCollector.entity;
 
 /**
  * @author taichu

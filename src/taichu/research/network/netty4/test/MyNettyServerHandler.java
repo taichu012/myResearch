@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.test.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.test;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

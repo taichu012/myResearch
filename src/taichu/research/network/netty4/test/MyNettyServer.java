@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.test.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.test;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -20,8 +20,8 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.CharsetUtil;
-import taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
-import taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
 import taichu.research.tool.Delimiters;
 
 /**

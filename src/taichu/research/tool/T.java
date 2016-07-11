@@ -14,7 +14,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
 
 /**
  * @author taichu
@@ -277,12 +277,12 @@ public class T {
 			Reflect r=new Reflect();
 			//test OutputBeanFieldsAsCsvLine
 			System.out.println(r.OutputClassFieldsAsCsvLine(
-					r.getClazz("taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord")));
-			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString()));
-			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord()));
+					r.getClazz("taichu.research.network.netty4.test.entity.VehiclePassingRecord")));
+			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString()));
+			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord()));
 			String cvsLine="<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>";
-			taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord record =
-					new taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord();
+			taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord record =
+					new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord();
 			record=(VehiclePassingRecord) r.InputCsvLine2Entity(cvsLine,record.getClass());
 			if (record!=null){
 				System.out.println(r.OutputEntityFieldsAsCsvLine(record));

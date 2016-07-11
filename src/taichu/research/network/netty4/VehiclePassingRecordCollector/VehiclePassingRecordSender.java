@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.test.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.VehiclePassingRecordCollector;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -16,7 +16,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
 import taichu.research.tool.Delimiters;
 
 /**
@@ -85,7 +85,7 @@ public final class VehiclePassingRecordSender {
                      p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordLineBasedString.MSG_LINE_MAX_LENGTH,
                     		 true,false,delimiter_win,delimiter_linux,delimiter_mac));  
                      p.addLast(new StringDecoder());  
-                     p.addLast(new VehiclePassRecordHandler());
+                     p.addLast(new VehiclePassingRecordClientHandler());
                      
                      //如下定义了OUTBOUND入栈（client->server)的消息层层包装，是按addLast的“逆序”来处理；
                      //所谓“逆序”，是先定义到addLast的最后处理；
