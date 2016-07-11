@@ -1,12 +1,10 @@
-package taichu.research.network.netty4.test.VehicleTrafficRecordCollector;
+package taichu.research.tool;
 
 // “\r”是换行符，“\n”是回车符，对win、linux、mac os苹果三个OS都不同；
 // WIN用“\r\n”，linux用“\n”，MAC OS用“\r”，分别都作为文本行结束标记
 //详见：http://m.blog.csdn.net/article/details?id=8121951；
 // 经查看netty库的源码，class“LineBasedFrameDecoder”只支持win/linux
 // os两种，不支持mac os的“\r”作为分隔符，
-// 所以本协议接口如果使用LineBasedFrameDecoder作为handler，则
-// 必须定义只使用“\r\n”或“\r”，二选一作为行结束标记！不支持\r！
 
 
 public class Delimiters {

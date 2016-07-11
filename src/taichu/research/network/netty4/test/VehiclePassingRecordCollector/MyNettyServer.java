@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.test.VehicleTrafficRecordCollector;
+package taichu.research.network.netty4.test.VehiclePassingRecordCollector;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -20,6 +20,9 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.CharsetUtil;
+import taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
+import taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
+import taichu.research.tool.Delimiters;
 
 /**
  * 从client获取数据，解析并显示，完成后返回response到client.
@@ -73,7 +76,7 @@ public final class MyNettyServer {
                      ByteBuf delimiter_linux = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForLinux());
                      ByteBuf delimiter_mac = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForMac());
 
-                     p.addLast(new DelimiterBasedFrameDecoder(IVehicleTrafficRecord.MSG_LINE_MAX_LENGTH,
+                     p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordLineBasedString.MSG_LINE_MAX_LENGTH,
                     		 true,false,delimiter_win,delimiter_linux,delimiter_mac));  
 
                      

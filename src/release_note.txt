@@ -131,6 +131,15 @@ H0005 类型后面三个点(String...)，是从Java 5开始，Java语言对方�
     }
     
 H0006: java不允许只有返回值不同（函数名和参数表都一样）的成员函数存在！
+
+H0007: 怎样获得System.getProperty("ABC", "456")
+	说明：只有在启动程序/app时候用参数（见如下举例）以“-D”开头，则可在程序中用System.getProperty()获取到该参数的值
+		set JAVA_OPTS =%JAVA_OPTS%  -DABC=123
+		set DEBUG_OPTS=%DEBUG_OPTS% -DXXX="string value"
+		set JAVA_OPTS =%JAVA_OPTS%  -DYYY=false
+		通用格式：-Dproperty.name=value
+		然后用System.getProperty('ABC',"456")可以获取到值,如果为空，默认设定为“456”
+
 	  
 	  
 	  

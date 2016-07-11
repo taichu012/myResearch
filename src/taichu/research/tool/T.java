@@ -4,11 +4,17 @@
 package taichu.research.tool;
 
 import java.lang.management.ManagementFactory;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
 
 /**
  * @author taichu
@@ -20,6 +26,7 @@ public class T {
 	//        then, define a inner class named "reflect" to hold function for sub topic
 	//        why to do this? it's easy and obviously to use as T.getT().subtopic.functionX();
 	public static Reflect reflect = null;
+	public static Time time=null;
 
 
 	/**
@@ -198,10 +205,124 @@ public class T {
 			}
 			return ret;
 		}
+		
+		public String OutputClassFieldsAsCsvLine(Class<?> clazz){
+			Field[] fs = clazz.getDeclaredFields();  
+			StringBuilder csvLine=new StringBuilder();
+			for(int i = 0 ; i < fs.length; i++){  
+				Field f = fs[i];  
+//			    f.setAccessible(true); //设置些属性是可以访问的  
+//			    Object val = f.get(bean);//得到此属性的值     
+				csvLine.append(f.getName()+',');
+			}
+			return csvLine.toString();
+		}
+		
+		
+		public String OutputEntityFieldsAsCsvLine(Object obj){
+			Field[] fs = obj.getClass().getDeclaredFields();  
+			StringBuilder csvHeadLine = new StringBuilder();
+			StringBuilder csvBodyLine = new StringBuilder();
+			Object value=null;
+			for(int i = 0 ; i < fs.length; i++){  
+				Field f = fs[i];  
+			    f.setAccessible(true); //设置些属性是可以访问的  
+			    try {
+					value = f.get(obj);
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}//得到此属性的值     
+				csvHeadLine.append(f.getName()+',');
+				if (value==null) value="<null>";
+				csvBodyLine.append(value.toString()+',');
+			}
+			return csvHeadLine.toString()+"\r\n"+csvBodyLine.toString();
+		}
+		
+		public Object InputCsvLine2Entity(String csvLine, Class<?> clazz){
+			
+			Object ret=null;
+			if (csvLine==null||csvLine.length()==0) return ret;
+
+			//split csvLine into values String[] in order left2right
+			String[] values=csvLine.split(",");//CVS use ',' as delimiter. 
+			
+			//get fields from class object in order nature of Class source code.
+			ret = getObject(clazz);
+			//Below funtion NEED use Object NOT Class to call 
+			Field[] fs = ret.getClass().getDeclaredFields(); 
+
+			for(int i = 0 ; i < fs.length; i++){  
+				Field f = fs[i];  
+			    f.setAccessible(true); //设置些属性是可以访问的  
+			    try {
+					f.set(ret,values[i]);
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}//得到此属性的值     
+			}
+			return ret;
+		}
+		
+		public static void main(String[] args){
+			
+			Reflect r=new Reflect();
+			//test OutputBeanFieldsAsCsvLine
+			System.out.println(r.OutputClassFieldsAsCsvLine(
+					r.getClazz("taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord")));
+			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString()));
+			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord()));
+			String cvsLine="<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>";
+			taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord record =
+					new taichu.research.network.netty4.test.VehiclePassingRecordCollector.entity.VehiclePassingRecord();
+			record=(VehiclePassingRecord) r.InputCsvLine2Entity(cvsLine,record.getClass());
+			if (record!=null){
+				System.out.println(r.OutputEntityFieldsAsCsvLine(record));
+				
+			}
+		}
+		
 	}
+	
+	
 	
 	public void test() {
 		//
+	}
+
+	public static class Time {
+
+		public Time() {
+		}
+
+		public static Time getTime() {
+			if (time == null) {
+				time = new Time();
+			}
+			return time;
+		}
+
+		//test nanoTime and BigDecimal
+		public static void main(String[] args) {
+			long start = System.nanoTime();// 纳秒
+			System.out.println(start);
+			long end = System.nanoTime();// 纳秒
+			System.out.println(end);
+			BigDecimal diff = BigDecimal.valueOf(end - start, 10);// 秒级差值
+			System.out.println(diff);
+			BigDecimal result = diff.setScale(9, RoundingMode.HALF_UP);// 调节精度
+			System.out.println(result);
+			java.text.DecimalFormat fmt = new DecimalFormat("#.#########s");// 输出格式化
+			System.out.println(fmt.format(result));
+		}
 	}
 
 }
