@@ -37,6 +37,8 @@ public class VehiclePassingRecordLineBasedString extends VehiclePassingRecord {
 	public static final String EOS=Delimiters.Delimiter_verticalbar;
 	//idle/sleep time as gap between TWO Records
 	public static final int SLEEP_MS=0;
+	//charset
+	public static final String CHARSET="UTF_8";
 		
 	public boolean lineLengthBeyondLimitation(String record) {
 		return record.length()>MSG_LINE_MAX_LENGTH;
