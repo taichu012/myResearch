@@ -16,6 +16,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import io.netty.util.CharsetUtil;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
 import taichu.research.tool.Delimiters;
 
@@ -30,7 +31,7 @@ import taichu.research.tool.Delimiters;
  * 
  * TODO:
  * 1. netty's timeout topic.
- * 2. netty's multi thread topic.
+ * 2. netty's multithread topic.
  * 3. need a vehiclePassingRecordSend的配置INI文件，配置端口port等；
  * 
  */
@@ -84,7 +85,7 @@ public final class VehiclePassingRecordSender {
                      //为decoder添加多个分界符；
                      p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordLineBasedString.MSG_LINE_MAX_LENGTH,
                     		 true,false,delimiter_win,delimiter_linux,delimiter_mac));  
-                     p.addLast(new StringDecoder());  
+                     p.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
                      p.addLast(new VehiclePassingRecordClientHandler());
                      
                      //如下定义了OUTBOUND入栈（client->server)的消息层层包装，是按addLast的“逆序”来处理；

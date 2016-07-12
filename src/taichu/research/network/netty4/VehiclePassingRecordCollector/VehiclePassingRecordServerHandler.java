@@ -12,6 +12,7 @@ import taichu.research.tool.T;
 
 /**
  * Handler implementation for the server.
+ * TODO：消息event的先后关系，详查netty自带javadoc的Interface ChannelHandlerContext
  */
 @Sharable
 public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdapter {
@@ -28,7 +29,8 @@ public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdap
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-    	log.debug("Got event (channel-read).");
+    	//A Channel received a message
+    	log.debug("Got event ‘channelRead’.");
     	
     	if (msg instanceof String) {
     		log.debug("Got a msg from client,msg=["+msg.toString()+"]");
@@ -66,8 +68,8 @@ public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdap
     	//output to console for testing
 		System.out.println("Got msg["+msg+"],length=["+msg.length()+"]");
 		
-		//TODO: Parse this message/record and resends to kafka(other system) ASAP;
-		//do not spend too much time here!
+		//TODO: Parse this message/record and resends to kafka as a producer ASAP！;
+		//或者更复杂的是将消息扔到一个队列就马上返回，队列处理输入kafka的问题，但破坏了事务性，建议直接在这里输入kafka！
 		
 		return msgid;
 		
@@ -87,7 +89,8 @@ public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdap
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        System.out.println("==============channel-read-complete==============");
+    	//leave channelRead method
+    	log.debug("Got event ‘channelReadComplete’.");
         ctx.flush();
     }
 
@@ -95,21 +98,28 @@ public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdap
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
-        cause.printStackTrace();
-        printStat();
+    	log.error(cause.getMessage());
+    	log.error(cause.getStackTrace());
+//        printStat();
         ctx.close();
     }
     
     @Override
     public boolean isSharable() {
-        System.out.println("==============handler-sharable==============");
-        //TODO：此函数的用处和场景是什么？
+        //说明：http://my.oschina.net/xinxingegeya/blog/295577
+    	//举例：http://www.myexception.cn/software-architecture-design/1256248.html
+    	//推测：@Sharable是加载class前面的annotation，用来说明handler是可以被反复利用，反复放在pool中的。
+    	//    否则应该就用1个线程1次性使用，并考虑合理退出exit机制，而不应该用多线程或pool机制；
+    	//    当client断开连接后，handler被回收等待再利用，此时没有sharable就会报错。
+    	
+    	log.debug("Got event ‘isSharable’.");
         return super.isSharable();
     }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("==============channel-register==============");
+    	//A Channel was registered to its EventLoop
+    	log.debug("Got event ‘channelRegistered’.");
         //TODO：推断在client连接上来后，就初始化一个channel并注册，等client关闭后，channel自动注销；
         System.out.println("Create instance of MyNettyServerHandler at: "+firstCallTime);
         firstCallTime=System.currentTimeMillis();
@@ -118,20 +128,22 @@ public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdap
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("==============channel-unregister==============");
+    	//A Channel was unregistered from its EventLoop
+    	log.debug("Got event ‘channelUnregistered’.");
         printStat();
-        System.out.println("channel-unregister at: "+System.currentTimeMillis());
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("==============channel-active==============");
-        //TODO：需要调查如果idle事件后，是否会在收到msg时重新再次avtive激活？推断理应如此。
+    	//A Channel is active now, which means it is connected. 
+    	log.debug("Got event ‘channelActive’.");
+    	
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("==============channel-inactive==============");
+    	//A Channel is inactive now, which means it is closed. 
+    	log.debug("Got event ‘channelInactive’.");
 //        printStat();
     }
     
