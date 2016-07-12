@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.test;
+package taichu.research.network.netty4.demotest;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;

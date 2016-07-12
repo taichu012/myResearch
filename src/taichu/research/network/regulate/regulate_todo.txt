@@ -1,0 +1,16 @@
+Release Notes
+--------------------
+REQ0001:实现基本的“调控”框架，初见端倪，还需做几次大的调整；（20160712）
+
+
+
+
+
+
+
+TODOLIST：
+
+TODO0001: 再深化一次接口，将node升级为INode接口，接口允许多重继承；
+TODO0002： 接口二次定型后，增加各种基类，比如baseNode，baseRegulator等；
+TODO0003： 添加最基本的CPU/MEM/DISK/NETWORK等配置获取，总体load获取，进程load获取（可部分实现）；
+TODO0004： 以最小代价实现实际的demoNode和demoRegulator来观察，过程中肯定会涉及重构；

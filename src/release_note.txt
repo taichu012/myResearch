@@ -53,7 +53,7 @@ TODOLIST:
 7.【CLOSED】测试：用jmeter来发送message给producer，做压力测试
 8.【OPEN】开发：实现URL接口（非传统socket/TCP/UDP接口）接受数据给producer存入kafka(开发tomcat的webapp吗?或其他形式)
 9.【OPEN】开发：开发高层次的作业协议，协调consumer和producer的消息收发，监控topic变化，offset变化等；基于kafka，高于kafka; 
-10.【OPEN】开发：尝试用生物调控因子来动态的处理producer和consumer的数量（是否需要用到pool开源库？）
+10.【CLOSED】开发：尝试用生物调控因子来动态的处理producer和consumer的数量；【已经单独放入package“regulate”处理】
 11.【CLOSED】IDE：JAVADOC/API文档嵌入：eclipse中菜单Window到Perferences到java项到installed JRE，选中rt.jar包，单击右边Javadoc Location；
 12.【GOING】开发：netty框架比mina新和好，用起来！用netty异步NIO框架+executor的线程池（也许netty自己有线程池！）
 	官网：http://netty.io/wiki/user-guide-for-4.x.html
