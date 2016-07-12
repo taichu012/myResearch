@@ -77,7 +77,6 @@ public final class VehiclePassingRecordReceiver {
                          p.addLast(sslCtx.newHandler(ch.alloc()));
                      }
 
-
                      //设定channel inbounds pipeline，按allLast添加的顺序处理；
                      //先解析client发来的line based消息（line frame分包），再将byte[]组成string，提供给handler
                      
@@ -100,7 +99,7 @@ public final class VehiclePassingRecordReceiver {
                      p.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
                      
                      //p.addLast(new LoggingHandler(LogLevel.INFO));
-                     p.addLast(new VehiclePassingRecordServerHandler());
+                     p.addLast(new VehiclePassingRecordReceiverHandler());
                      
                  }
              });

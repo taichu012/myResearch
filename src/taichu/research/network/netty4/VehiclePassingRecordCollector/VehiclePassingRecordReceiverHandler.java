@@ -12,20 +12,20 @@ import taichu.research.tool.T;
 
 /**
  * Handler implementation for the server.
- * TODO：消息event的先后关系，详查netty自带javadoc的Interface ChannelHandlerContext
+ * 
  */
 @Sharable
-public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdapter {
+public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAdapter {
 	
-	private static Logger log = Logger.getLogger("VehiclePassingRecordServerHandler.class");
-	private volatile long firstCallTime=System.currentTimeMillis();
+	private static Logger log = Logger.getLogger("VehiclePassingRecordReceiverHandler.class");
+	private volatile long firstCallTime=System.nanoTime();
 	
     private int badMsgReceivedCount=0;
     private int goodMsgReceivedCount=0;
     private int goodMsgSentCount=0;
     private int badMsgSendCount=0;
-    //由client控制发送数目来测试，server不控制，被动接受。
-    //private volatile int MAX_SEND_MSG=50000;
+
+    //netty触发的event的先后关系，详查netty自带javadoc的Interface ChannelHandlerContext
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -58,7 +58,6 @@ public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdap
 	    		badMsgSendCount++;
 	    	}
     	}
-    	//TODO: stopping here!
     	
     }
     
@@ -100,7 +99,7 @@ public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdap
         // Close the connection when an exception is raised.
     	log.error(cause.getMessage());
     	log.error(cause.getStackTrace());
-//        printStat();
+        printStat();
         ctx.close();
     }
     
@@ -121,9 +120,9 @@ public class VehiclePassingRecordServerHandler extends ChannelInboundHandlerAdap
     	//A Channel was registered to its EventLoop
     	log.debug("Got event ‘channelRegistered’.");
         //TODO：推断在client连接上来后，就初始化一个channel并注册，等client关闭后，channel自动注销；
-        System.out.println("Create instance of MyNettyServerHandler at: "+firstCallTime);
-        firstCallTime=System.currentTimeMillis();
-        System.out.println("channel-register at: "+firstCallTime);
+        System.out.println("Create instance of VehiclePassingRecordReceiverHandler at: "+firstCallTime+"ns");
+        firstCallTime=System.nanoTime();
+        System.out.println("channel-register at: "+firstCallTime+"ns");
     }
 
     @Override

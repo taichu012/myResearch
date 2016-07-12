@@ -3,6 +3,10 @@
  */
 package taichu.research.tool;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -13,6 +17,8 @@ import java.nio.ByteBuffer;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Properties;
 
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
 
@@ -27,6 +33,7 @@ public class T {
 	//        why to do this? it's easy and obviously to use as T.getT().subtopic.functionX();
 	public static Reflect reflect = null;
 	public static Time time=null;
+	public static File file=null;
 
 
 	/**
@@ -34,6 +41,8 @@ public class T {
 	 */
 	public T() {
 		Reflect.getReflect();
+		File.getFile();
+		Time.getTime();
 	}
 	private static T instance = null;
 
@@ -73,14 +82,9 @@ public class T {
 	long currentTime = System.currentTimeMillis();
 
 	public String getDateTimeFromCurrentTimeMillis() {
-
-		// SimpleDateFormat formatter = new
-		// SimpleDateFormat("yyyy年-MM月dd日-HH时mm分ss秒");
-		// Date date = new Date(System.currentTimeMillis());
-		// return (formatter.format(date));
 		return getDateTimeFromCurrentTimeMillis(System.currentTimeMillis());
 	}
-
+	
 	public String getDateTimeFromCurrentTimeMillis(long ms) {
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy年-MM月dd日-HH时mm分ss秒");
@@ -324,5 +328,51 @@ public class T {
 			System.out.println(fmt.format(result));
 		}
 	}
+	
+	public static class File {
+		
+		public File(){}
+		public static File getFile() {
+			if (file == null) {
+				file = new File();
+			}
+			return file;
+		}
+		
+		private BufferedReader reader = null;
+		protected HashMap<String, String> sections = new HashMap<String, String>();
+		
+		public String[] getLinesFromFile(String filename){
+			String[] lines=new String[]{};
+			try {
+				reader = new BufferedReader(new FileReader(filename));
+				String line=null;
+				int i=0;
+				while ((line = reader.readLine()) != null) {
+					lines[i]=line; //TODO: this line error can't 赋值！
+					i++;
+				}
+				reader.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				System.out.println("Doesn't find Csv file(" + filename + ")!");
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("Read Csv file(" + filename + ") error!");
+			} finally {
+				reader = null;
+			}
+			return lines;
+		}
+
+		
+		/*
+		 * cvs相关工具类
+		 */
+		//test nanoTime and BigDecimal
+		public static void main(String[] args) {
+		}
+	}
+	
 
 }

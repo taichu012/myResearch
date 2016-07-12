@@ -4,6 +4,7 @@
 package taichu.research.network.netty4.VehiclePassingRecordCollector.entity;
 
 import taichu.research.tool.Delimiters;
+import taichu.research.tool.T;
 
 /**
  * @author taichu
@@ -40,8 +41,12 @@ public class VehiclePassingRecordLineBasedString extends VehiclePassingRecord {
 	//charset
 	public static final String CHARSET="UTF_8";
 		
-	public boolean lineLengthBeyondLimitation(String record) {
+	public static boolean lineLengthBeyondLimitation(String record) {
 		return record.length()>MSG_LINE_MAX_LENGTH;
+	}
+	
+	public static String genOneMessage(VehiclePassingRecord record){
+		return T.getT().reflect.OutputEntityFieldsAsCsvLine(record);
 	}
 
 

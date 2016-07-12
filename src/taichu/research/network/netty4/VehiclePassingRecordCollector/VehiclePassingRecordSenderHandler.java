@@ -4,36 +4,42 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
 import taichu.research.tool.Delimiters;
 import taichu.research.tool.T;
 
 /**
  * 实现消息的处理
  */
-public class VehiclePassingRecordClientHandler extends ChannelInboundHandlerAdapter {
+public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdapter {
 
     private int badMsgReceivedCount=0;
     private int goodMsgReceivedCount=0;
     private int goodMsgSentCount=0;
     private int badMsgSendCount=0;
-    private static  int MAX_SEND_MSG=6000000;
+    private static  int MAX_SEND_MSG=5000000;
+    private VehiclePassingRecord[] vpRecords=new VehiclePassingRecord[]{};
+    private String[] messages=new String[]{};
 
     /**
      * Creates a client-side handler.
      */
-    public VehiclePassingRecordClientHandler() {    }
+    public VehiclePassingRecordSenderHandler() {
+    	String csvFilename = "C:\\source\\git\\MyResearch\\src\\taichu\\research\\network\\netty4\\VehiclePassingRecordCollector\\VehiclePassingRecordDemo.csv";
+    	String[] lines = T.getT().file.getLinesFromFile(csvFilename);
+    	for (int i=0; i<lines.length; i++) {
+    		vpRecords[i]=(VehiclePassingRecord) T.getT().reflect.InputCsvLine2Entity(lines[i], VehiclePassingRecord.class);
+    		messages[i]=VehiclePassingRecordLineBasedString.genOneMessage(vpRecords[i]);
+    	}
+
+    }
 
     //准备以当前时间为主的不断变化的字符串
     private String getNextMsg() { 
     	long currTimeMs=System.currentTimeMillis();
 
-//    	//以下包含三种OS的不同行结束分界符，用来测试，结果符合预期。实测其他功能时，最好来回消息一一对应，不要1对N，不方便观察。
-//    	return "Client.sendtime.ms=["+currTimeMs
-//    	+"]=["+T.GetF().getDateTimeFromCurrentTimeMillis(currTimeMs)+"]"
-//    	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>."+Delimiters.getLineDelimiterStrForWin()
-//    	+"本行以   n结尾<如能解析为单独一行则说明   n被正确的用于行分解符了！>："+Delimiters.getLineDelimiterStrForLinux()
-//    	+"本行以   r结尾<如能解析为单独一行则说明   r被正确的用于行分解符了！>："+Delimiters.getLineDelimiterStrForMac()
-//    	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>："+Delimiters.getLineDelimiterStrForWin();}
+    	//读入vehicle record from CSV；应该放在初始化的地方，形成map或list，这里直接都快速返回一条消息；
     	
     	return "Client.sendtime.ms=["+currTimeMs
     	+"]=["+T.getT().getDateTimeFromCurrentTimeMillis(currTimeMs)+"]"
@@ -42,9 +48,17 @@ public class VehiclePassingRecordClientHandler extends ChannelInboundHandlerAdap
     
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-    	ByteBuf resp = Unpooled.copiedBuffer(getNextMsg().getBytes());
-        ctx.writeAndFlush(resp);
-        goodMsgSentCount++;
+    	for (int i=0; i<messages.length; i++) {
+	    	ByteBuf resp = Unpooled.copiedBuffer(messages[i].getBytes());
+	        ctx.writeAndFlush(resp);
+	        try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        goodMsgSentCount++;
+    	}
     }
 
     @Override
@@ -62,7 +76,7 @@ public class VehiclePassingRecordClientHandler extends ChannelInboundHandlerAdap
 
     	//经过INBOUND处理链上先后的分包和string化，根据协议，server返回的时间ms可直接作为string打印；
 //    	System.out.println("Server.sendtime.ms=["+msg+"]=["
-//    	+T.GetF().getDateTimeFromCurrentTimeMillis(Long.parseLong((String) msg))+"]");
+//    	+T.GetF().getDateTimeFromnanoTime(Long.parseLong((String) msg))+"]");
     	System.out.println(msg.toString());
     	
     	
@@ -126,7 +140,7 @@ public class VehiclePassingRecordClientHandler extends ChannelInboundHandlerAdap
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         System.out.println("==============channel-unregister==============");
         printStat();
-        System.out.println("channel-unregister at: "+System.currentTimeMillis());
+        System.out.println("channel-unregister at: "+System.nanoTime());
     }
     
     private void printStat(){

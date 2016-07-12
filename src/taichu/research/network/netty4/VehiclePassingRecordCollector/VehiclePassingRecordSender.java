@@ -86,7 +86,7 @@ public final class VehiclePassingRecordSender {
                      p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordLineBasedString.MSG_LINE_MAX_LENGTH,
                     		 true,false,delimiter_win,delimiter_linux,delimiter_mac));  
                      p.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
-                     p.addLast(new VehiclePassingRecordClientHandler());
+                     p.addLast(new VehiclePassingRecordSenderHandler());
                      
                      //如下定义了OUTBOUND入栈（client->server)的消息层层包装，是按addLast的“逆序”来处理；
                      //所谓“逆序”，是先定义到addLast的最后处理；
