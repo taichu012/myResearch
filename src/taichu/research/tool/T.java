@@ -14,11 +14,14 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
 
@@ -339,18 +342,15 @@ public class T {
 			return file;
 		}
 		
-		private BufferedReader reader = null;
-		protected HashMap<String, String> sections = new HashMap<String, String>();
-		
-		public String[] getLinesFromFile(String filename){
-			String[] lines=new String[]{};
+		public ConcurrentHashMap<String, String> getLinesFromFile(String filename){
+			ConcurrentHashMap<String, String> linesMap = new ConcurrentHashMap<String, String>(); 
+			BufferedReader reader = null;
 			try {
 				reader = new BufferedReader(new FileReader(filename));
 				String line=null;
-				int i=0;
 				while ((line = reader.readLine()) != null) {
-					lines[i]=line; //TODO: this line error can't 赋值！
-					i++;
+					String md5 = genMD5(line);
+					linesMap.put(md5, line);
 				}
 				reader.close();
 			} catch (FileNotFoundException e) {
@@ -362,8 +362,30 @@ public class T {
 			} finally {
 				reader = null;
 			}
-			return lines;
+			return linesMap;
 		}
+		
+		public String genMD5(String data) { 
+	        MessageDigest md = null;
+	        StringBuffer buf = new StringBuffer(); 
+			try {
+				md = MessageDigest.getInstance("MD5");
+		        md.update(data.getBytes()); 
+		        byte[] bits = md.digest(); 
+		        for(int i=0;i<bits.length;i++){ 
+		            int a = bits[i]; 
+		            if(a<0) a+=256; 
+		            if(a<16) buf.append("0"); 
+		            buf.append(Integer.toHexString(a)); 
+		        }
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			} 
+	        return buf.toString(); 
+	    } 
+
 
 		
 		/*

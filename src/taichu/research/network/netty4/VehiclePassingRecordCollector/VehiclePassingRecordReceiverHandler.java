@@ -24,53 +24,73 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
     private int goodMsgReceivedCount=0;
     private int goodMsgSentCount=0;
     private int badMsgSendCount=0;
+    private long bytes=0l;
 
     //netty触发的event的先后关系，详查netty自带javadoc的Interface ChannelHandlerContext
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
     	//A Channel received a message
-    	log.debug("Got event ‘channelRead’.");
-    	
+//    	log.debug("Got event ‘channelRead’.");
+    	String oneMsg=null;
     	if (msg instanceof String) {
-    		log.debug("Got a msg from client,msg=["+msg.toString()+"]");
-    		goodMsgReceivedCount++;
+    		oneMsg=msg.toString();
+    		bytes+=oneMsg.getBytes().length;
+//    		log.debug("Got a msg from client,msg=["+oneMsg+"]，bytes["+oneMsg.getBytes().length+"]");
+    		if (msg.toString().length()<=0){
+    			badMsgReceivedCount++;
+    			return;
+    		}else {
+    			goodMsgReceivedCount++;
+    		}
     	}else {
 //       		System.out.println("Got a bad msg!");
-    		log.debug("Got a bad msg from client!");
+    		log.error("Got a bad msg from client!");
     		badMsgReceivedCount++;
     		return;
     	}
     	
     	//handle message/record ASAP.
-    	String msgid=handleMsg(msg.toString());
+    	String msgid=handleMsg(oneMsg);
     	if ("".equals(msgid)){
     		log.warn("Parse message error: got bad message id section!");
+    		badMsgReceivedCount++;
     	}else {
 	    	//create response and send back to client as ACK
-	    	String response = createResponse(msgid);
-	    	if(!"".equals(response)){
-	    		ByteBuf resp = Unpooled.copiedBuffer(response.getBytes()); 
-	    		ctx.writeAndFlush(resp);
-	    		log.debug("Server sent response to client,response=["+response+"].");
-	    	   	goodMsgSentCount++;
-	    	}else {
-	    		badMsgSendCount++;
-	    	}
+	    	ByteBuf resp = Unpooled.copiedBuffer(createResponse(msgid).getBytes()); 
+	    	
+	    	ctx.writeAndFlush(resp);
+//	    	log.debug("Server sent response to client,response=["+createResponse(msgid)+"].");
+	    	goodMsgSentCount++;
+	    	if (goodMsgSentCount%10000==0){
+    			log.debug(goodMsgSentCount+",send feedback["+msgid.toString()+"]");
+    		}
+	    	
+//	    	try {
+//				Thread.sleep(5);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+
     	}
     	
     }
     
     private String handleMsg(String msg) {
-    	String msgid="";
-    	
+   	
     	//output to console for testing
-		System.out.println("Got msg["+msg+"],length=["+msg.length()+"]");
+//		System.out.println("Got msg["+msg+"],length=["+msg.length()+"]");
 		
 		//TODO: Parse this message/record and resends to kafka as a producer ASAP！;
 		//或者更复杂的是将消息扔到一个队列就马上返回，队列处理输入kafka的问题，但破坏了事务性，建议直接在这里输入kafka！
 		
-		return msgid;
+    	//如果第一个字符就是‘|’或找不到它，就返回空字符串；否则取回第一个竖杠的前面所有substring
+    	if (msg.indexOf('|')<=0) {
+    		return "";
+    	}else {	
+    		return msg.substring(0, msg.indexOf('|'));
+    	}
 		
 	}
 
@@ -89,7 +109,7 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
     	//leave channelRead method
-    	log.debug("Got event ‘channelReadComplete’.");
+//    	log.debug("Got event ‘channelReadComplete’.");
         ctx.flush();
     }
 
@@ -99,6 +119,7 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
         // Close the connection when an exception is raised.
     	log.error(cause.getMessage());
     	log.error(cause.getStackTrace());
+    	cause.printStackTrace();
         printStat();
         ctx.close();
     }
@@ -120,9 +141,9 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
     	//A Channel was registered to its EventLoop
     	log.debug("Got event ‘channelRegistered’.");
         //TODO：推断在client连接上来后，就初始化一个channel并注册，等client关闭后，channel自动注销；
-        System.out.println("Create instance of VehiclePassingRecordReceiverHandler at: "+firstCallTime+"ns");
+        log.info(firstCallTime+"ns,"+"Instance of VehiclePassingRecordReceiverHandler is created!");
         firstCallTime=System.nanoTime();
-        System.out.println("channel-register at: "+firstCallTime+"ns");
+        log.info(firstCallTime+"ns,"+"channel-registered!");
     }
 
     @Override
@@ -143,19 +164,19 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
     	//A Channel is inactive now, which means it is closed. 
     	log.debug("Got event ‘channelInactive’.");
-//        printStat();
+        printStat();
     }
     
     private void printStat(){
-    	long currentTime=System.currentTimeMillis();
-    	long deltaTime=currentTime-firstCallTime;
-    	System.out.println("Total got MSG=" + goodMsgReceivedCount+", spent="+(deltaTime)/1000+"秒, AVG="
-    			+ goodMsgReceivedCount*1000/deltaTime + "CAPS");
+    	long deltaTime=System.nanoTime()-firstCallTime;
+    	log.info("Total got MSG=" + goodMsgReceivedCount+", in "+(deltaTime)/1000/1000+"ms, AVG="
+    			+ (float)goodMsgReceivedCount*1000*1000*1000/deltaTime + "CAPS, "+bytes/1000/8+"KBps.");
     	
-    	System.out.println("MSG sent successful:" + goodMsgSentCount
+    	log.info("MSG sent successful:" + goodMsgSentCount
     			+", MSG sent bad:"+ badMsgSendCount
     			+", MSG received successful:"+ goodMsgReceivedCount
-    			+", MSG received bad:"+badMsgReceivedCount);
+    			+", MSG received bad:"+badMsgReceivedCount
+    			+", 空包率=坏包率="+(double)badMsgReceivedCount/goodMsgReceivedCount+"%");
     	
     	
     }

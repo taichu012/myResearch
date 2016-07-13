@@ -1,5 +1,7 @@
 package taichu.research.network.netty4.VehiclePassingRecordCollector;
 
+import org.apache.log4j.Logger;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -13,6 +15,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -36,6 +40,8 @@ import taichu.research.tool.Delimiters;
  * 
  */
 public final class VehiclePassingRecordSender {
+	
+	private static Logger log = Logger.getLogger("VehiclePassingRecordSender.class");
 
     static final boolean SSL = System.getProperty("ssl") != null;
     static final String HOST = System.getProperty("host", "127.0.0.1");
@@ -60,10 +66,14 @@ public final class VehiclePassingRecordSender {
             Bootstrap b = new Bootstrap();
             b.group(group)
              .channel(NioSocketChannel.class)
+             //浅谈tcp_nodelay的作用 ；（http://stephen830.iteye.com/blog/2109006）
              .option(ChannelOption.TCP_NODELAY, true)
-             .option(ChannelOption.SO_BACKLOG, 15) //TODO:待研究
+             .option(ChannelOption.SO_BACKLOG, 1) //TODO:待研究
              //netty框架的 keepAlive属性，不能设置间隔，会采用系统默认的配置2小时，程序里怎么自己设置？TODO：
              .option(ChannelOption.SO_KEEPALIVE, true)
+             .option(ChannelOption.SO_SNDBUF, 32*1024)
+             .option(ChannelOption.SO_RCVBUF, 32*1024)
+             .handler(new LoggingHandler(LogLevel.DEBUG))
              .handler(new ChannelInitializer<SocketChannel>() {
                  @Override
                  public void initChannel(SocketChannel ch) throws Exception {

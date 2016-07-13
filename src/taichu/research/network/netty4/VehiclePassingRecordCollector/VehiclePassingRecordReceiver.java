@@ -1,5 +1,7 @@
 package taichu.research.network.netty4.VehiclePassingRecordCollector;
 
+import org.apache.log4j.Logger;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -41,6 +43,7 @@ import taichu.research.tool.Delimiters;
  * 
  */
 public final class VehiclePassingRecordReceiver {
+	private static Logger log = Logger.getLogger("VehiclePassingRecordReceiver.class");
 	
     static final boolean SSL = System.getProperty("ssl") != null;
     static final int PORT = Integer.parseInt(System.getProperty("port", "9923"));
@@ -65,10 +68,13 @@ public final class VehiclePassingRecordReceiver {
             b.group(bossGroup, workerGroup)
              .channel(NioServerSocketChannel.class)
              //what is BACKLOG(http://docs.oracle.com/javase/7/docs/api/java/net/ServerSocket.html#bind(java.net.SocketAddress,%20int))
-             .option(ChannelOption.SO_BACKLOG, 15)
+             .option(ChannelOption.SO_BACKLOG, 1)
+             .option(ChannelOption.TCP_NODELAY, true)
              //netty框架的 keepAlive属性，不能设置间隔，会采用系统默认的配置2小时，程序里可进一步在应用层设定
              .childOption(ChannelOption.SO_KEEPALIVE, true)
-//             .handler(new LoggingHandler(LogLevel.INFO))
+             .handler(new LoggingHandler(LogLevel.DEBUG))
+             .option(ChannelOption.SO_SNDBUF, 32*1024)
+             .option(ChannelOption.SO_RCVBUF, 32*1024)
              .childHandler(new ChannelInitializer<SocketChannel>() {
                  @Override
                  public void initChannel(SocketChannel ch) throws Exception {

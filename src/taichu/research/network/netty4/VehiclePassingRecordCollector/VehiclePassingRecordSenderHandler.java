@@ -1,9 +1,15 @@
 package taichu.research.network.netty4.VehiclePassingRecordCollector;
 
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.log4j.Logger;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import kafka.log.Log;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
 import taichu.research.tool.Delimiters;
@@ -14,110 +20,108 @@ import taichu.research.tool.T;
  */
 public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdapter {
 
+	private static Logger log = Logger.getLogger("VehiclePassingRecordSenderHandler.class");
+	
     private int badMsgReceivedCount=0;
     private int goodMsgReceivedCount=0;
     private int goodMsgSentCount=0;
     private int badMsgSendCount=0;
-    private static  int MAX_SEND_MSG=5000000;
-    private VehiclePassingRecord[] vpRecords=new VehiclePassingRecord[]{};
-    private String[] messages=new String[]{};
+    private int MAX_SEND_MSG=1000000;
 
     /**
      * Creates a client-side handler.
      */
     public VehiclePassingRecordSenderHandler() {
-    	String csvFilename = "C:\\source\\git\\MyResearch\\src\\taichu\\research\\network\\netty4\\VehiclePassingRecordCollector\\VehiclePassingRecordDemo.csv";
-    	String[] lines = T.getT().file.getLinesFromFile(csvFilename);
-    	for (int i=0; i<lines.length; i++) {
-    		vpRecords[i]=(VehiclePassingRecord) T.getT().reflect.InputCsvLine2Entity(lines[i], VehiclePassingRecord.class);
-    		messages[i]=VehiclePassingRecordLineBasedString.genOneMessage(vpRecords[i]);
-    	}
 
     }
-
-    //准备以当前时间为主的不断变化的字符串
-    private String getNextMsg() { 
-    	long currTimeMs=System.currentTimeMillis();
-
-    	//读入vehicle record from CSV；应该放在初始化的地方，形成map或list，这里直接都快速返回一条消息；
-    	
-    	return "Client.sendtime.ms=["+currTimeMs
-    	+"]=["+T.getT().getDateTimeFromCurrentTimeMillis(currTimeMs)+"]"
-    	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>."+Delimiters.getLineDelimiterStrForWin();
-    	}
     
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-    	for (int i=0; i<messages.length; i++) {
-	    	ByteBuf resp = Unpooled.copiedBuffer(messages[i].getBytes());
-	        ctx.writeAndFlush(resp);
-	        try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+    	log.info("Got event 'channelActive'.");
+    	String csvFilename = "D:\\SourceRemote\\git\\MyResearch\\src\\taichu\\research\\network\\netty4\\VehiclePassingRecordCollector\\VehiclePassingRecordDemo.csv";
+    	ConcurrentHashMap<String, String> linesMap = T.getT().file.getLinesFromFile(csvFilename);
+    	StringBuffer message=new StringBuffer(); 
+    	ByteBuf resp =null;
+    	
+    	int i=0;
+    	while (i<MAX_SEND_MSG){
+//    		log.debug("处理下4条消息.");
+	    	for(Entry<String, String> line: linesMap.entrySet() ){ 
+	    		//根据SMP协议，section1放入MD5校验值，后面添加上其他sections
+	    		//添加MD5值为头
+	    		message.append(line.getKey());
+	    		message.append(Delimiters.Delimiter_verticalbar);
+	    		//转换value中的csv的逗号为竖杠“|”
+	    		message.append((line.getValue()).replace(',','|'));
+	    		message.append(Delimiters.getLineDelimiterStrForWin());
+	    		
+//	            log.debug("send message=["+message.toString()+"]"); 
+//	    		log.debug("组装1条消息.");
+	            goodMsgSentCount++;
+	            //清空message
+	    	}
+    		//send message
+//	    	log.debug("发送4条消息.");
+    		resp = Unpooled.copiedBuffer(message.toString().getBytes());
+            ctx.writeAndFlush(resp);
+            resp.clear();
+    		message.delete(0,message.length());
+			if (i%10000==0) {
+				log.debug("已经发送了"+i*4+"条消息.");
 			}
-	        goodMsgSentCount++;
+
+	    	i++;
+//	    	log.debug("准备处理后4条消息.");
     	}
+//    	ctx.flush();
+    	log.debug(goodMsgSentCount+"条消息发送完毕.");
+        printStat();
+//        ctx.close();
+    	
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-   	
+//    	log.info("Got event 'channelRead'.");
 
-    	if (msg == null||"".equals(msg)) {
-    		System.out.println("Got null msg!");
+    	if (!(msg instanceof String)) {
+    		log.warn("Got null msg!");
+    		badMsgReceivedCount++;
+    		return;
+    	}else if(msg.toString().length()==0){
+    		log.warn("Got empty msg!");
     		badMsgReceivedCount++;
     		return;
     	}else {
     		goodMsgReceivedCount++;
+    		if (goodMsgReceivedCount%10000==0){
+    			log.debug(goodMsgReceivedCount+",Got feedback["+msg.toString()+"]");
+    		}
+    		if (goodMsgReceivedCount>=MAX_SEND_MSG*4){
+    			log.warn("Meet limitation, client is closed!"+goodMsgReceivedCount+","+MAX_SEND_MSG*4);
+    			ctx.close();
+    		}
     	}
-    	
-
-    	//经过INBOUND处理链上先后的分包和string化，根据协议，server返回的时间ms可直接作为string打印；
-//    	System.out.println("Server.sendtime.ms=["+msg+"]=["
-//    	+T.GetF().getDateTimeFromnanoTime(Long.parseLong((String) msg))+"]");
-    	System.out.println(msg.toString());
-    	
+   	
     	
     	//TODO:server返回的msg可以作为对client发来message的处理请求的response，也可作为异步处理。
     	//这里是同步处理了。必须要有server返回，则才能让client触发下一条消息的发送；
     	//如果异步处理，就要涉及两边模块对消息状态的管控，包括超时等处理。万一server对某条msg处理30秒才返回，
     	//client作为超时并重发了，导致server多处理了一遍就不好了。 是个难点；
 
-    	//TODO:设定手动停止标记，比eclipse强制关闭更好些！
-    	if (goodMsgSentCount>MAX_SEND_MSG) {
-    		System.out.println("Close client after sent "+MAX_SEND_MSG+" msgs!");
-//            printStat();
-    		ctx.close();
-    		return;
-    	}
-    	
-//    	try {
-//			Thread.sleep(1);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-    	String response = getNextMsg();
 
-    	if(response==null||"".equals(response)){
-    		badMsgSendCount++;
-    	}else{
-        	ByteBuf resp = Unpooled.copiedBuffer(response.getBytes());
-    		ctx.writeAndFlush(resp);
-    		goodMsgSentCount++;
-    	}
     }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-       ctx.flush();
+//    	log.info("Got event 'channelReadComplete'.");
+//       ctx.flush();
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
+    	log.error("Got event 'exceptionCaught'.");
         cause.printStackTrace();
         printStat();
         ctx.close();
@@ -126,28 +130,28 @@ public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdap
     
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("==============channel-inactive==============");
-//        printStat();
+    	log.info("Got event 'channelInactive'.");
+        printStat();
+        ctx.close();
     }
     
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("==============channel-register==============");
-
+    	log.info("Got event 'channelRegistered'.");    	
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("==============channel-unregister==============");
+    	log.info("Got event 'channelUnregistered'.");   
         printStat();
-        System.out.println("channel-unregister at: "+System.nanoTime());
     }
     
     private void printStat(){
     	System.out.println("MSG sent successful:" + goodMsgSentCount
     			+", MSG sent bad:"+badMsgSendCount
     			+", MSG received successful:"+ goodMsgReceivedCount
-    			+", MSG received bad:"+badMsgReceivedCount);
+    			+", MSG received bad:"+badMsgReceivedCount
+    			+", 空包率=坏包率="+(double)badMsgReceivedCount/goodMsgReceivedCount+"%");
     	
     }
 }
