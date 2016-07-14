@@ -8,8 +8,14 @@ SMP的定义：
 	1a.分层结构：SMP分为两层结构，‘消息间’和‘消息内’；
 	1b.字符定义：全部使用utf-8字符集；
 	1c.压缩加密：未考虑；但可自定义（在‘消息内’可由两端节点实现层自定义）；
-	1d.传输协议：基于TCP协议（socket），需要保持TCP的长连接（开启TCP自定义的心跳keep alive），
-	 		    但实现层可增加自己的心跳定义；
+	1d.传输协议：
+		i.下层协议：基于TCP协议（socket），需要保持TCP的长连接（开启TCP自定义的心跳keep alive）；
+		ii.心跳协议：基于TCP协议自带默认2小时无任何交互则拆除连接，而在此期间会保持TCP协议内自带的信息；
+		                            应用层上SMP支持两种心跳：方式A和方式B；它作为特殊的消息，也需要用“消息间”的分隔符来分隔！
+		                            方式A：client/server任何一端运行独自发送“HB”2chars，探测TCP读写是否正常，如果失败则认为TCP/SOCKET失效，尝试拆除连接，保存数据；
+		                            方式B：client/server任一方可互发，发起方发送“PING”，接收方返回“PONG”，都为4chars，尝试3次失败，则认为TCP/SOCKET失效，并善后；
+		                           说明：SMP协议两端可协商实现同一种方式，A或B，或者一端都实现也可。
+	 		 server无需发送心跳给client；
 	1e.工作方式：异步消息收发机制；server将client的消息中MSGID字段回传来确认消息正确传输；
 	1f.可靠性：    基于TCP协议（包有ack确认和有序传递，但需要自己处理粘包问题）；
 	1g.消息组成：“section|section2|...|sectionK\r\nsection1|section2|...|sectionK\r\n...”（不含引号）

@@ -11,7 +11,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import kafka.log.Log;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Smp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp;
 import taichu.research.tool.Delimiters;
 import taichu.research.tool.T;
 
@@ -20,14 +21,19 @@ import taichu.research.tool.T;
  */
 public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdapter {
 
-	private static Logger log = Logger.getLogger("VehiclePassingRecordSenderHandler.class");
+	private static Logger log = Logger.getLogger(VehiclePassingRecordSenderHandler.class);
+	private static final String PING=VehiclePassingRecordBasedOnSmp.HEARTBEAT_REQ;
+	private static final String HB=VehiclePassingRecordBasedOnSmp.HEARTBEAT_CHARS;
 	
     private int badMsgReceivedCount=0;
     private int goodMsgReceivedCount=0;
     private int goodMsgSentCount=0;
     private int badMsgSendCount=0;
-    private int MAX_SEND_MSG=1000000;
-
+    //100万组消息，每组4条（从目前csv读入），供400万条消息，netty可以支持。
+    //如果是200万条消息，就总计800万条SMP消息，netty报2GB内存溢出。
+//    private int MAX_SEND_MSG=1000000; //此基本为极限，2000000导致内存溢出；
+    private int MAX_SEND_MSG=50000;
+    
     /**
      * Creates a client-side handler.
      */
@@ -85,17 +91,24 @@ public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdap
 //    	log.info("Got event 'channelRead'.");
 
     	if (!(msg instanceof String)) {
-    		log.warn("Got null msg!");
+//    		log.warn("Got null msg!");
     		badMsgReceivedCount++;
     		return;
     	}else if(msg.toString().length()==0){
-    		log.warn("Got empty msg!");
+//    		log.warn("Got empty msg!");
     		badMsgReceivedCount++;
     		return;
     	}else {
     		goodMsgReceivedCount++;
     		if (goodMsgReceivedCount%10000==0){
     			log.debug(goodMsgReceivedCount+",Got feedback["+msg.toString()+"]");
+				ctx.writeAndFlush(Unpooled.copiedBuffer((PING+
+						 Smp.EOL).toString().getBytes()));
+				log.info("发送了一条PING.");
+				ctx.writeAndFlush(Unpooled.copiedBuffer((HB+
+						 Smp.EOL).toString().getBytes()));
+    			log.info("Send HB and ensure peer side is alive! Do nothing!");
+		    	}
     		}
     		if (goodMsgReceivedCount>=MAX_SEND_MSG*4){
     			log.warn("Meet limitation, client is closed!"+goodMsgReceivedCount+","+MAX_SEND_MSG*4);
@@ -110,7 +123,6 @@ public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdap
     	//client作为超时并重发了，导致server多处理了一遍就不好了。 是个难点；
 
 
-    }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {

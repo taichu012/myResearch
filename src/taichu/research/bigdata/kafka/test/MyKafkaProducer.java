@@ -28,7 +28,7 @@ import org.apache.log4j.*;
  */
 public class MyKafkaProducer implements Runnable, IExitHandling {
 
-	private static Logger log = Logger.getLogger("MyKafkaProducer.class");
+	private static Logger log = Logger.getLogger(MyKafkaProducer.class);
 	private static volatile MyKafkaProducer instance = null;
 	private KafkaProducer<String, String> producer = null;
 	public volatile boolean exitFlag = false; 

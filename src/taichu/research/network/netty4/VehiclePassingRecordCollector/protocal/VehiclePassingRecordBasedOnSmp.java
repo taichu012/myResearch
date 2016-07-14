@@ -1,8 +1,9 @@
 /**
  * 
  */
-package taichu.research.network.netty4.VehiclePassingRecordCollector.entity;
+package taichu.research.network.netty4.VehiclePassingRecordCollector.protocal;
 
+import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
 import taichu.research.tool.Delimiters;
 import taichu.research.tool.T;
 
@@ -10,7 +11,7 @@ import taichu.research.tool.T;
  * @author taichu
  *
  */
-public class VehiclePassingRecordLineBasedString extends VehiclePassingRecord {
+public class VehiclePassingRecordBasedOnSmp extends VehiclePassingRecord implements Smp {
 
 	// /*
 	// 一条典型的消息记录举例如下(双引号内)：
@@ -33,17 +34,6 @@ public class VehiclePassingRecordLineBasedString extends VehiclePassingRecord {
 	//其实可能netty自己管控这网卡硬件或OS的buffer大小，详细待查 TODO：
 	public static final int MSG_LINE_MAX_LENGTH = 1200;
 	
-	//socket mode
-	public static final boolean SOCKET_MODE_IS_TCP_NOT_UDP=true;
-	//end of line
-	public static final String EOL=Delimiters.EOL_LFCR;
-	//end of section
-	public static final String EOS=Delimiters.Delimiter_verticalbar;
-	//idle/sleep time as gap between TWO Records
-	public static final int SLEEP_MS=0;
-	//charset
-	public static final String CHARSET="UTF_8";
-		
 	public static boolean lineLengthBeyondLimitation(String record) {
 		return record.length()>MSG_LINE_MAX_LENGTH;
 	}

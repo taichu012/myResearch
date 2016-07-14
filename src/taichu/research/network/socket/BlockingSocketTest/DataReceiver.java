@@ -17,7 +17,7 @@ public class DataReceiver implements Runnable {
 
 	// http://www.cnblogs.com/fbsk/archive/2012/02/03/2336689.html
 
-	private static Logger log = Logger.getLogger("DataReceiver.class");
+	private static Logger log = Logger.getLogger(DataReceiver.class);
 	private Socket socket;
 	private BufferedReader is;
 	private PrintWriter os;

@@ -7,6 +7,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Smp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp;
 import taichu.research.tool.Delimiters;
 import taichu.research.tool.T;
 
@@ -17,7 +19,8 @@ import taichu.research.tool.T;
 @Sharable
 public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAdapter {
 	
-	private static Logger log = Logger.getLogger("VehiclePassingRecordReceiverHandler.class");
+	private static Logger log = Logger.getLogger(VehiclePassingRecordReceiverHandler.class);
+	private static final String PING=VehiclePassingRecordBasedOnSmp.HEARTBEAT_REQ;
 	private volatile long firstCallTime=System.nanoTime();
 	
     private int badMsgReceivedCount=0;
@@ -64,6 +67,9 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
 	    	goodMsgSentCount++;
 	    	if (goodMsgSentCount%10000==0){
     			log.debug(goodMsgSentCount+",send feedback["+msgid.toString()+"]");
+				ctx.writeAndFlush(Unpooled.copiedBuffer((PING+
+						 Smp.EOL).toString().getBytes()));
+				log.info("发送了一条PING.");
     		}
 	    	
 //	    	try {
@@ -97,10 +103,10 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
 	private String createResponse(String msgid){
 		StringBuilder resp= new StringBuilder();
 		
-		//response format please refer to protocol in VehiclePassingRecordLineBasedString
+		//response format please refer to protocol in VehiclePassingRecordBasedOnSmp
     	resp.append(msgid);//msgid got from client
     	resp.append(Delimiters.Delimiter_verticalbar);//"|" as delimiter
-    	resp.append(System.nanoTime());//server nanotime for client
+    	resp.append(System.currentTimeMillis());//server nanotime for client
     	resp.append(Delimiters.getLineDelimiterStrForWin()); //line delimiter
     	
     	return resp.toString();

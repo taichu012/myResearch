@@ -21,7 +21,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.util.CharsetUtil;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp;
 import taichu.research.tool.Delimiters;
 
 /**
@@ -76,7 +76,7 @@ public final class MyNettyServer {
                      ByteBuf delimiter_linux = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForLinux());
                      ByteBuf delimiter_mac = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForMac());
 
-                     p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordLineBasedString.MSG_LINE_MAX_LENGTH,
+                     p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
                     		 true,false,delimiter_win,delimiter_linux,delimiter_mac));  
 
                      

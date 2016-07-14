@@ -14,7 +14,7 @@ import org.apache.log4j.*;
  */
 public class MyKafkaConsumer  implements Runnable, IExitHandling {
 	
-	private static Logger log = Logger.getLogger("MyKafkaConsumer.class");
+	private static Logger log = Logger.getLogger(MyKafkaConsumer.class);
 	private static volatile MyKafkaConsumer instance = null;
 	private KafkaConsumer<String, String> consumer = null;
 	public static int MAX_NBR_GET_NOTHING=10;

@@ -62,10 +62,7 @@ TODOLIST:
 11.【CLOSED】IDE：JAVADOC/API文档嵌入：eclipse中菜单Window到Perferences到java项到installed JRE，选中rt.jar包，单击右边Javadoc Location；
 12.【GOING】开发：netty框架比mina新和好，用起来！用netty异步NIO框架+executor的线程池（也许netty自己有线程池！）
 	官网：http://netty.io/wiki/user-guide-for-4.x.html
-	[tested]netty入门实例【极好！】（http://www.cnblogs.com/zhuawang/p/3849742.html）
-	[tested]netty举例【2013年，举例非常旧！】（http://lippeng.iteye.com/blog/1907279）
-	[tested]netty中的粘包和分包【极好】：http://m.blog.csdn.net/article/details?id=41122501
-	netty框架下server收着N个client，并可能主动发给client信息（一边server是被动接受client，而不是主动发信息给client）
+
 	http://m.blog.csdn.net/article/details?id=49073557
 	插入public class TimeoutHandler extends IdleStateHandler
 	（http://www.oschina.net/question/1015705_102078?fromerr=sWg3susA）
@@ -101,61 +98,6 @@ TODOLIST:
 
 
 
-
-++++++++++++++++
-Hints
-++++++++++++++++
-
-H0001 处理报错：Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/log4j/Level
-                 说明： 缺少包：slf4j-api-1.5.2.jar，slf4j-log4j12-1.5.2.jar，log4j-1.2.17.jar
-                             它们 都在kafka安装目录的libs中，拷贝到工程，应用为build编译所需类库文件；
-                             然后 在class类文件开头引入包“import org.apache.log4j.*; 
-                             在 class类文件的类定义中加入“private static Logger log =Logger.getLogger("MyClass.class");”
-                             
-H0002 中文乱码问题（TODO）：
-	1.WIN7默认的cmd（命令行窗口）是GBK编码（2字节），不是utf-8（3字节）；
-	2.在cmd中可以用命令“chcp”来切换：
-		chcp 65001  就是换成UTF-8代码页
-		chcp 936 可以换回默认的GBK
-		chcp 437 是美国英语
-	3.一般来说eclipse默认页码是GBK，可在“window--preferences--general--workspace”设定为utf-8
-	4.在cmd中启动zookeeper和kafka后，再启动1个producer和1个consumer，因为都是GBK，所以消息为“中文”，都能看到；但是producer的CMD
-	  窗体输入中文后，在IDE/eclipse中的console输出的时候看到“？？？”问号；待研究TODO；
-	5.eclipse的源码source编码格式一般继承OS，比如继承WIN7的默认GBK，但可以转换显示。问题是如果java文件是GBK，txt文件是utf-8，转换为
-	 任何一种，其他就看不到了。而且转换显示，并非“实际转换文件！”，所以可以安装插件“com.lifesting.tool.encoding_1.0.0.jar”，
-	 就能在eclipse中实现转换规则设定，包括文件实际转换！
-	  
-H0003 关于网络IO堵塞
-	//socket.accept线程会因为client没有发送换行回车而阻塞；
-	//也会因为最后没有获得约定的结束标记而永远阻塞；
-	//如果为socket设定了accept的timeout，则会收到SocketTimeoutException而供你处置，
-	//如果你不主动结束socket，即使抛出超时异常，socket依然阻塞！
-	//windows下是先回车后换行（\r\n，或13,10，在jmeter里面可以设定E0L），MAC OS是换行\r，Linux是回车\n
-	//工具jmeter的tcpsample默认一行之后会自动添加回车换行符，便于对端socket的readline捕获回车或换行
-	//但是因为阻塞网络IO没有协商结束标记，所以只要TCP socket开着，而网络无字节/字符流量，就一直在read阻塞
-	//所以必须协商结束符比如"<EOF>"等作为flag。
-	
-	//对于非阻塞式的NIO，再研究！可以直接上框架netty
-	
-H0004 eclipse的快速格式化format快捷键是ctrl+shift+f，但经常和输入法冲突，当你关闭输入法才可以让这个快捷方式奇效！
-
-H0005 类型后面三个点(String...)，是从Java 5开始，Java语言对方法参数支持一种新写法，叫可变长度参数列表;
-      http://bbs.51cto.com/thread-1012690-1.html
-      
-      比如netty中的如下语句
-          public DelimiterBasedFrameDecoder(int maxFrameLength, ByteBuf... delimiters) {
-        this(maxFrameLength, true, delimiters);
-    }
-    
-H0006: java不允许只有返回值不同（函数名和参数表都一样）的成员函数存在！
-
-H0007: 怎样获得System.getProperty("ABC", "456")
-	说明：只有在启动程序/app时候用参数（见如下举例）以“-D”开头，则可在程序中用System.getProperty()获取到该参数的值
-		set JAVA_OPTS =%JAVA_OPTS%  -DABC=123
-		set DEBUG_OPTS=%DEBUG_OPTS% -DXXX="string value"
-		set JAVA_OPTS =%JAVA_OPTS%  -DYYY=false
-		通用格式：-Dproperty.name=value
-		然后用System.getProperty('ABC',"456")可以获取到值,如果为空，默认设定为“456”
 
 	  
 	  

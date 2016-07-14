@@ -14,7 +14,7 @@ import taichu.research.tool.IniReader;
  *
  */
 class MyKafkaDemo implements IExitHandling {
-	private static Logger log = Logger.getLogger("MyKafkaDemo.class");
+	private static Logger log = Logger.getLogger(MyKafkaDemo.class);
 	public static MyKafkaProducer pdr = null;
 	public static MyKafkaConsumer csr = null;
 	public static Process zkp = null;

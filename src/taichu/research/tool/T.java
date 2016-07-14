@@ -284,8 +284,8 @@ public class T {
 			Reflect r=new Reflect();
 			//test OutputBeanFieldsAsCsvLine
 			System.out.println(r.OutputClassFieldsAsCsvLine(
-					r.getClazz("taichu.research.network.netty4.test.entity.VehiclePassingRecord")));
-			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecordLineBasedString()));
+					r.getClazz("taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord")));
+			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp()));
 			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord()));
 			String cvsLine="<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>";
 			taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord record =

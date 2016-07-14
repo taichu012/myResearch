@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public class SocketTCPServer implements IAudit, IStart, IShutdown, IRegulate {
 
-	private static Logger log = Logger.getLogger("SocketTCPServer.class");
+	private static Logger log = Logger.getLogger(SocketTCPServer.class);
 
 	/**
 	 * @param args

@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public class SocketTCPServer {
 
-	private static Logger log = Logger.getLogger("SocketTCPServer.class");
+	private static Logger log = Logger.getLogger(SocketTCPServer.class);
 
 	/**
 	 * @param args
