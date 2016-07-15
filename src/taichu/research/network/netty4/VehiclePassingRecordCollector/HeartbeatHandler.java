@@ -23,7 +23,7 @@ import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Veh
  *
  */
 
-@Sharable
+
 public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 	private static Logger log = Logger.getLogger(HeartbeatHandler.class);
 	private static final String TIMEOUT_CONFIG_STR="read超时"+Smp.READ_IDEL_TIMEOUT_S

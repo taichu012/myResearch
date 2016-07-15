@@ -40,13 +40,13 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
     		bytes+=oneMsg.getBytes().length;
 //    		log.debug("Got a msg from client,msg=["+oneMsg+"]，bytes["+oneMsg.getBytes().length+"]");
     		if (msg.toString().length()<=0){
+        		log.error("Got a empty msg from client!");
     			badMsgReceivedCount++;
     			return;
     		}else {
     			goodMsgReceivedCount++;
     		}
     	}else {
-//       		System.out.println("Got a bad msg!");
     		log.error("Got a bad msg from client!");
     		badMsgReceivedCount++;
     		return;
@@ -59,24 +59,16 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
     		badMsgReceivedCount++;
     	}else {
 	    	//create response and send back to client as ACK
-	    	ByteBuf resp = Unpooled.copiedBuffer(createResponse(msgid).getBytes()); 
+    		String rspmsg=createResponse(msgid);
+	    	ByteBuf resp = Unpooled.copiedBuffer(rspmsg.getBytes()); 
 	    	
 	    	ctx.writeAndFlush(resp);
 //	    	log.debug("Server sent response to client,response=["+createResponse(msgid)+"].");
 	    	goodMsgSentCount++;
-	    	if (goodMsgSentCount%10000==0){
-    			log.debug(goodMsgSentCount+",send feedback["+msgid.toString()+"]");
-//				ctx.writeAndFlush(Unpooled.copiedBuffer((PING+
-//						 Smp.EOL).toString().getBytes()));
-//				log.info("发送了一条PING.");
+	    	if (goodMsgSentCount%100000==0){
+//    			log.debug(goodMsgSentCount+",send feedback["+rspmsg.toString()+"]");
+	    		printStat();
     		}
-	    	
-//	    	try {
-//				Thread.sleep(5);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 
     	}
     	
@@ -175,12 +167,12 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
     private void printStat(){
     	long deltaTime=System.nanoTime()-firstCallTime;
     	log.info("Total got MSG=" + goodMsgReceivedCount+", in "+(deltaTime)/1000/1000+"ms, AVG="
-    			+ (float)goodMsgReceivedCount*1000*1000*1000/deltaTime + "CAPS, "+bytes/1000/8+"KBps.");
+    			+ (float)goodMsgReceivedCount*1000*1000*1000/deltaTime + "CAPS, "+bytes/1000/8*1000*1000*1000/deltaTime+"KBps.");
     	
-    	log.info("MSG sent successful:" + goodMsgSentCount
-    			+", MSG sent bad:"+ badMsgSendCount
-    			+", MSG received successful:"+ goodMsgReceivedCount
+    	log.info(", MSG received successful:"+ goodMsgReceivedCount
     			+", MSG received bad:"+badMsgReceivedCount
+    			+"MSG sent successful:" + goodMsgSentCount
+    			+", MSG sent bad:"+ badMsgSendCount
     			+", 空包率=坏包率="+(double)badMsgReceivedCount/goodMsgReceivedCount+"%");
     	
     	

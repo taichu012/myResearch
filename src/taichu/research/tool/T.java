@@ -342,7 +342,7 @@ public class T {
 			return file;
 		}
 		
-		public ConcurrentHashMap<String, String> getLinesFromFile(String filename){
+		public ConcurrentHashMap<String, String> getLinesWithMD5KeyFromFile(String filename){
 			ConcurrentHashMap<String, String> linesMap = new ConcurrentHashMap<String, String>(); 
 			BufferedReader reader = null;
 			try {
