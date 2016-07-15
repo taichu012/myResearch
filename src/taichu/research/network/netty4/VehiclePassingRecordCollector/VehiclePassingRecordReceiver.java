@@ -27,6 +27,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Smp;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp;
 import taichu.research.tool.Delimiters;
 
@@ -54,12 +55,8 @@ public final class VehiclePassingRecordReceiver {
 //  static final int SIZE = Integer.parseInt(System.getProperty("size", "256"));
   static final int SIZE = VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH;
   
-    //上下这些配置都应该转化为配置文件，INI等；
-	private static final long READ_IDEL_TIMEOUT_S = 30; // 读超时
-	private static final long WRITE_IDEL_TIMEOUT_S = 45;// 写超时
-	private static final long ALL_IDEL_TIMEOUT_S = 60; // 所有超时
-
-//	protected static final PingPongHandler pingPongHandler = new PingPongHandler();
+	//Handler MUST be marked with ‘@Sharable’, then can be used as local variable and 
+	//maybe reused(isSharable() event will be triggered if it is shared) for different pipeline!
 	protected static final HeartbeatHandler heartbeatHandler = new HeartbeatHandler();
 
     public static void main(String[] args) throws Exception {
@@ -100,13 +97,7 @@ public final class VehiclePassingRecordReceiver {
                      //先解析client发来的line based消息（line frame分包），再将byte[]组成string，提供给handler
                      
                      //Decoders added with order
-
-                     
-                     //添加netty框架自带的控制读超时，写超时告警handler！
-                     //此超时检测并发送单向心跳的handler不参与消息具体业务处理。
-                     p.addLast(new IdleStateHandler(READ_IDEL_TIMEOUT_S,
-             				WRITE_IDEL_TIMEOUT_S, ALL_IDEL_TIMEOUT_S, TimeUnit.SECONDS)); // 
-                     
+                    
                      //http://netty.io/4.0/api/io/netty/handler/codec/LineBasedFrameDecoder.html
                      //client发来的MSG是line based，分界符可能是三种OS的，所以都尝试处理；
                      ByteBuf delimiter_win = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForWin());
@@ -123,17 +114,13 @@ public final class VehiclePassingRecordReceiver {
                      //将上一个decoder通过分隔符返回的bytes组装成string，否则输出的是不可视的字节信息！
                      p.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
                      
+                     //添加netty框架自带的控制读超时，写超时告警handler！
+                     //此超时检测并发送单向心跳的handler不参与消息具体业务处理。
+                     p.addLast(new IdleStateHandler(Smp.READ_IDEL_TIMEOUT_S,
+                    		 Smp.WRITE_IDEL_TIMEOUT_S, Smp.ALL_IDEL_TIMEOUT_S, TimeUnit.SECONDS)); // 
 
                      //添加自定义的处理读，写，空闲超时的handler.
-                     p.addLast("heartBeatHandler", new HeartbeatHandler()); 
-                     
-                     //添加自定义的PINGPONG心跳处理器（逻辑心跳，不是TCP协议自动实现的心跳）handler.
-                     //逻辑，如果是PING就返回PONG，并中断消息处理链！如果是PONG丢弃，也中断消息处理链！
-                     //重要说明：不用每次new，就说明handler可以被多条pipeline或pipeline中各异步的操作并发访问
-                     //@sharable必须被说明在handler的class定义上面。
-                     p.addLast("pingPongHandler",new PingPongHandler()); 
-                    
-
+                     p.addLast("heartBeatHandler", heartbeatHandler); 
                      p.addLast("vprReceiverHandler",new VehiclePassingRecordReceiverHandler());
                      
                  }

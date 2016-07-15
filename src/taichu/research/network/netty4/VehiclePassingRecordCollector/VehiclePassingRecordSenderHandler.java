@@ -9,10 +9,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import kafka.log.Log;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Smp;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp;
 import taichu.research.tool.Delimiters;
 import taichu.research.tool.T;
 
@@ -22,8 +18,7 @@ import taichu.research.tool.T;
 public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdapter {
 
 	private static Logger log = Logger.getLogger(VehiclePassingRecordSenderHandler.class);
-	private static final String PING=VehiclePassingRecordBasedOnSmp.HEARTBEAT_REQ;
-	private static final String HB=VehiclePassingRecordBasedOnSmp.HEARTBEAT_CHARS;
+
 	
     private int badMsgReceivedCount=0;
     private int goodMsgReceivedCount=0;
@@ -102,17 +97,18 @@ public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdap
     		goodMsgReceivedCount++;
     		if (goodMsgReceivedCount%10000==0){
     			log.debug(goodMsgReceivedCount+",Got feedback["+msg.toString()+"]");
-				ctx.writeAndFlush(Unpooled.copiedBuffer((PING+
-						 Smp.EOL).toString().getBytes()));
-				log.info("发送了一条PING.");
-				ctx.writeAndFlush(Unpooled.copiedBuffer((HB+
-						 Smp.EOL).toString().getBytes()));
-    			log.info("Send HB and ensure peer side is alive! Do nothing!");
+//				ctx.writeAndFlush(Unpooled.copiedBuffer((PING+
+//						 Smp.EOL).toString().getBytes()));
+//				log.info("发送了一条PING.");
+//				ctx.writeAndFlush(Unpooled.copiedBuffer((HB+
+//						 Smp.EOL).toString().getBytes()));
+//    			log.info("Send HB and ensure peer side is alive! Do nothing!");
 		    	}
     		}
     		if (goodMsgReceivedCount>=MAX_SEND_MSG*4){
-    			log.warn("Meet limitation, client is closed!"+goodMsgReceivedCount+","+MAX_SEND_MSG*4);
-    			ctx.close();
+    			log.warn("Meet limitation, msg got"+goodMsgReceivedCount+", sent "+MAX_SEND_MSG*4+
+    					", client is idle NOW!");
+//    			ctx.close();
     		}
     	}
    	

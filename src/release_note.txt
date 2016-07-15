@@ -37,6 +37,7 @@ REQ0020:实现基本的SMP协议，用netty收发smp消息达到约15KCAPS/10MBS
 		处理800万条的时候开头就报错内存不够，详见（http://stackoverflow.com/questions/21299975/in-netty-4-do-i-need-to-set-option-xxmaxdirectmemorysize）
 		发现即使发送正确，netty会有一定概率发送空包（上层逻辑接收到未主动发送的空字符串）的情况，百万分支1.5以下；逻辑应该要考虑屏蔽；
 		不做处理会发生未知错误，较难排查；
+REQ0021:将子项目VPRC单独用自己的release note开发和跟踪，从主research项目中独立；
 
 
 
@@ -60,33 +61,6 @@ TODOLIST:
 9.【OPEN】开发：开发高层次的作业协议，协调consumer和producer的消息收发，监控topic变化，offset变化等；基于kafka，高于kafka; 
 10.【CLOSED】开发：尝试用生物调控因子来动态的处理producer和consumer的数量；【已经单独放入package“regulate”处理】
 11.【CLOSED】IDE：JAVADOC/API文档嵌入：eclipse中菜单Window到Perferences到java项到installed JRE，选中rt.jar包，单击右边Javadoc Location；
-12.【GOING】开发：netty框架比mina新和好，用起来！用netty异步NIO框架+executor的线程池（也许netty自己有线程池！）
-	官网：http://netty.io/wiki/user-guide-for-4.x.html
-
-	http://m.blog.csdn.net/article/details?id=49073557
-	插入public class TimeoutHandler extends IdleStateHandler
-	（http://www.oschina.net/question/1015705_102078?fromerr=sWg3susA）
-	
-	可用片段--------------------
-	  ch.pipeline().addLast(
-            new TimeServerHandler(), //自定义
-            new WriteTimeoutHandler(10),//netty有的吧？
-            //控制写入超时10秒构造参数10表示如果持续10秒钟都没有数据写了，那么就超时。
-             new ReadTimeoutHandler(10)//netty有的吧？
-      );
-                            
-	
-    netty怎么插入自己的编辑吗codec handler
-    netty怎么控制client没有妥善关闭socket，没有结束符号的超时处理？
-    Netty系列之Netty百万级推送服务设计要点（http://www.cnblogs.com/zhuawang/p/4204366.html）
-    netty异步NIO的udp数据包启动配置DatagramChannel参数（http://blog.163.com/linfenliang@126/blog/static/12785719520121074486487/）
-    netty如果增加server和client的处理线程数？控制线程数？（现在从jvisualvm或jconsole中看到client，server的BACKLOG并不起作用）
-    netty尝试编解码http/url信令 http://www.cnblogs.com/luxiaoxun/p/3959450.html
-    netty的超时timeout处理
-    
-       基于netty4的TCP短连接测试  http://blog.163.com/linfenliang@126/blog/static/1278571952013721101340165/
-    
-13.【OPEN】看是否借鉴以前的unioss的一些控制？比如结束，SSL，stringSocket等？
 14.【CLOSED】IDE：jdk的class带着源码，可以直接查看；
 15.【CLOSED】IDE：查看第三方lib库的源码（点击类触发找不到class后，可选择带source的jar包）和javadoc（在build中lib中选择某个点开添加source和javadoc）
 16.【OPEN】开发：kafka集群的多台host（多个partition，多个producer，多个consumer等）的实践；

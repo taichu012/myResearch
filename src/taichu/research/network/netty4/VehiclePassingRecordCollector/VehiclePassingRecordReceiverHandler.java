@@ -20,7 +20,6 @@ import taichu.research.tool.T;
 public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAdapter {
 	
 	private static Logger log = Logger.getLogger(VehiclePassingRecordReceiverHandler.class);
-	private static final String PING=VehiclePassingRecordBasedOnSmp.HEARTBEAT_REQ;
 	private volatile long firstCallTime=System.nanoTime();
 	
     private int badMsgReceivedCount=0;
@@ -67,9 +66,9 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
 	    	goodMsgSentCount++;
 	    	if (goodMsgSentCount%10000==0){
     			log.debug(goodMsgSentCount+",send feedback["+msgid.toString()+"]");
-				ctx.writeAndFlush(Unpooled.copiedBuffer((PING+
-						 Smp.EOL).toString().getBytes()));
-				log.info("发送了一条PING.");
+//				ctx.writeAndFlush(Unpooled.copiedBuffer((PING+
+//						 Smp.EOL).toString().getBytes()));
+//				log.info("发送了一条PING.");
     		}
 	    	
 //	    	try {

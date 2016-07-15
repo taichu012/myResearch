@@ -26,10 +26,14 @@ public interface Smp  {
 	//charset
 	public static final String CHARSET="UTF_8";
 	//headbeat pattern（one message）
-	public static final String HEARTBEAT_CHARS="HB";
+	public static final String HEARTBEAT_HB="HB";
 	//headbeat pattern（paired message）
-	public static final String HEARTBEAT_REQ="PING";
-	public static final String HEARTBEAT_RSP="PONG";
+	public static final String HEARTBEAT_PING="PING";
+	public static final String HEARTBEAT_PONG="PONG";
+	//timeout config
+	public static final long READ_IDEL_TIMEOUT_S = 15; // 读超时
+	public static final long WRITE_IDEL_TIMEOUT_S = 20;// 写超时
+	public static final long ALL_IDEL_TIMEOUT_S = 30; // 所有超时
 
 
 }
