@@ -34,6 +34,19 @@ public interface Smp  {
 	public static final long READ_IDEL_TIMEOUT_S = 15; // 读超时
 	public static final long WRITE_IDEL_TIMEOUT_S = 20;// 写超时
 	public static final long ALL_IDEL_TIMEOUT_S = 30; // 所有超时
+	
+    /*
+     * check if is heart beat msg of SMP protocol
+     */
+    public static boolean isHeartBeat(String msg){
+    	if (Smp.HEARTBEAT_HB.equals(msg)||
+    			Smp.HEARTBEAT_PING.equals(msg)||
+    			Smp.HEARTBEAT_PONG.equals(msg)){
+    		return true;
+    	}else {
+    		return false;
+    	}
+    }
 
 
 }

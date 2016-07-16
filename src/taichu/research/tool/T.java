@@ -34,9 +34,9 @@ public class T {
 	//NOTICE: define sub topic as "reflect" here as public variable
 	//        then, define a inner class named "reflect" to hold function for sub topic
 	//        why to do this? it's easy and obviously to use as T.getT().subtopic.functionX();
-	public static Reflect reflect = null;
-	public static Time time=null;
-	public static File file=null;
+	public static volatile  Reflect reflect = null;
+	public static volatile  Time time=null;
+	public static volatile  File file=null;
 
 
 	/**
@@ -213,7 +213,7 @@ public class T {
 			return ret;
 		}
 		
-		public String OutputClassFieldsAsCsvLine(Class<?> clazz){
+		public String genOneCsvLineFromClassFields(Class<?> clazz){
 			Field[] fs = clazz.getDeclaredFields();  
 			StringBuilder csvLine=new StringBuilder();
 			for(int i = 0 ; i < fs.length; i++){  
@@ -226,7 +226,7 @@ public class T {
 		}
 		
 		
-		public String OutputEntityFieldsAsCsvLine(Object obj){
+		public String genTwoCsvLineFromBeanAttributesAndValues(Object obj){
 			Field[] fs = obj.getClass().getDeclaredFields();  
 			StringBuilder csvHeadLine = new StringBuilder();
 			StringBuilder csvBodyLine = new StringBuilder();
@@ -283,16 +283,16 @@ public class T {
 			
 			Reflect r=new Reflect();
 			//test OutputBeanFieldsAsCsvLine
-			System.out.println(r.OutputClassFieldsAsCsvLine(
+			System.out.println(r.genOneCsvLineFromClassFields(
 					r.getClazz("taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord")));
-			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp()));
-			System.out.println(r.OutputEntityFieldsAsCsvLine(new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord()));
+			System.out.println(r.genTwoCsvLineFromBeanAttributesAndValues(new taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp()));
+			System.out.println(r.genTwoCsvLineFromBeanAttributesAndValues(new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord()));
 			String cvsLine="<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>";
 			taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord record =
 					new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord();
 			record=(VehiclePassingRecord) r.InputCsvLine2Entity(cvsLine,record.getClass());
 			if (record!=null){
-				System.out.println(r.OutputEntityFieldsAsCsvLine(record));
+				System.out.println(r.genTwoCsvLineFromBeanAttributesAndValues(record));
 				
 			}
 		}

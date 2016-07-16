@@ -1,16 +1,10 @@
 package taichu.research.network.netty4.VehiclePassingRecordCollector;
 
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.log4j.Logger;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import taichu.research.tool.Delimiters;
-import taichu.research.tool.T;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Smp;
 
 /**
  * 实现消息的处理
@@ -47,17 +41,16 @@ public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdap
     		log.warn("Got empty msg!");
     		badMsgReceivedCount++;
     		return;
-    	}else {
+    	}else if (Smp.isHeartBeat(msg.toString())){
+			//如果是心跳包就流到下一个handler（timeout）处理；
+			ctx.fireChannelRead(msg);
+			return;
+		}else {
+    		
     		goodMsgReceivedCount++;
     		if (goodMsgReceivedCount%100000==0){
 //    			log.debug(goodMsgReceivedCount+",Got feedback["+msg.toString()+"]");
     			printStat();
-//				ctx.writeAndFlush(Unpooled.copiedBuffer((PING+
-//						 Smp.EOL).toString().getBytes()));
-//				log.info("发送了一条PING.");
-//				ctx.writeAndFlush(Unpooled.copiedBuffer((HB+
-//						 Smp.EOL).toString().getBytes()));
-//    			log.info("Send HB and ensure peer side is alive! Do nothing!");
 		    	}
     		}
     	}
@@ -69,12 +62,12 @@ public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdap
     	//client作为超时并重发了，导致server多处理了一遍就不好了。 是个难点；
 
 
-
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-//    	log.info("Got event 'channelReadComplete'.");
-//       ctx.flush();
-    }
+//
+//    @Override
+//    public void channelReadComplete(ChannelHandlerContext ctx) {
+////    	log.info("Got event 'channelReadComplete'.");
+////       ctx.flush();
+//    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
@@ -90,7 +83,10 @@ public class VehiclePassingRecordSenderHandler extends ChannelInboundHandlerAdap
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
     	log.info("Got event 'channelInactive'.");
         printStat();
-        ctx.close();
+        //说明：如果设定了SO_KEEPALIVE的启动netty参数，则是用了TCP协议本来的2小时超时协议，
+        //如果此时没有上层逻辑自己的心跳机制，则在2小时候，按照TCP协议断开connection，channel被netty设为inactive
+        //所以就close掉！
+//        ctx.close();
     }
     
     @Override

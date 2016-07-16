@@ -24,11 +24,11 @@ import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Veh
  */
 
 
-public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
-	private static Logger log = Logger.getLogger(HeartbeatHandler.class);
-	private static final String TIMEOUT_CONFIG_STR="read超时"+Smp.READ_IDEL_TIMEOUT_S
-			+"秒，write超时"+Smp.WRITE_IDEL_TIMEOUT_S
-			+"秒，all超时"+Smp.ALL_IDEL_TIMEOUT_S;
+public class SmpHeartbeatHandler extends ChannelInboundHandlerAdapter {
+	private static Logger log = Logger.getLogger(SmpHeartbeatHandler.class);
+	private static final String TIMEOUT_LOG_STR="read timeout："+Smp.READ_IDEL_TIMEOUT_S
+			+"s, write timeout:"+Smp.WRITE_IDEL_TIMEOUT_S
+			+"s, all idle timeout:"+Smp.ALL_IDEL_TIMEOUT_S;
 
 	private static final ByteBuf ByteBuf4PING = Unpooled
 			.unreleasableBuffer(Unpooled.copiedBuffer(
@@ -42,7 +42,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 	// which will just ignore release and retain calls.
 	private static final ByteBuf ByteBuf4HB = Unpooled
 			.unreleasableBuffer(Unpooled.copiedBuffer(
-					Smp.HEARTBEAT_HB+Smp.EOL,CharsetUtil.UTF_8));  // 1
+					Smp.HEARTBEAT_HB+Smp.EOL,CharsetUtil.UTF_8)); 
 
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
@@ -57,20 +57,22 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
 			} else if (event.state() == IdleState.ALL_IDLE) {
 				type = "all idle";
 			}
-			//当捕获到三类超时后，发送心跳协议，不要求对端回应（无定义，无要求），只要本发送成功，
-			//就说明TCP长连接保活机制（ChannelOption.SO_KEEPALIVE）是有效且在2小时内（默认），
-			//当前client和server之间的TCP链路通过TCP协议自己的心跳维持且双向互通正常OK，可用！
-			//如果发送失败，则得知TCP链路损毁，需拆除和善后；
-			//TODO：此处直接在发送失败后拆除链路，是否会级联触发其他event？归于善后处理（数据保存等）的机会？待查 TODO//
+			//当捕获到三类超时后，发送SMP的2种心跳协议，HB不要求对端回应，PINGPONG可以但不强制回应。
+			//一般的，只要发送成功，就说明TCP长连接保活机制（ChannelOption.SO_KEEPALIVE）是有效且在2小时内（默认），
+			//心跳机制也可额外增加逻辑层的其他自定义要求，不再累赘。
+			//如果发送失败，则得知TCP链路损毁，netty框架的future异步监听会拆除connection，关闭pipeline；
+			//TODO：如果需要在netty框架拆除链路之前做“善后处理”，则需要额外增加代码；
+			//programExit();
 			ctx.writeAndFlush(ByteBuf4HB.duplicate()).addListener(
 					ChannelFutureListener.CLOSE_ON_FAILURE); 
 			ctx.writeAndFlush(ByteBuf4PING.duplicate()).addListener(
 					ChannelFutureListener.CLOSE_ON_FAILURE);  
-			log.warn((ctx.channel().remoteAddress()+"超时类型：" + type+","+
-					TIMEOUT_CONFIG_STR));
-			//IdleStateEvent消息到此为止，不在流转！
+			log.warn((ctx.channel().remoteAddress()+"timeout for：" + type+","+
+					TIMEOUT_LOG_STR));
+			//IdleStateEvent消息到此为止，不再流转！
 			
-			//TODO:考虑在这里关闭整个pipeline，否则pipeline一直活着。超时心跳模块决定pipeline的是否关闭close！
+			//当捕获超时后打印信息，并按需发送HB消息；这里参考SMP协议做法，保持TCP长链接，超时候发送2种心跳之一或全部；
+			//如果不参考SMP协议，通常的做法也很可能是探测到timeout的一端主动关闭connection；
 			
 		} else {
 			super.userEventTriggered(ctx, evt);
@@ -83,30 +85,32 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
     	
     	if(!(msg instanceof String)){
     		//其他字节或字符串一律不做处理，触发后面handler继续read；
-    		ctx.fireChannelRead(msg);
+//    		ctx.fireChannelRead(msg);
+    		log.warn("心跳消息解析错误：流转到最后的非业务消息，也不是心跳消息，所以错误！ msg不是字符串.");
     	}else {
     		String str=msg.toString();
     		
        		if (Smp.HEARTBEAT_HB.equals(str)){
     			log.info("Got 'HB'2chars and ensure peer side is alive! Do nothing!");
     			//中断消息处理，不让其他handle处理
-    			ctx.fireChannelReadComplete();
+//    			ctx.fireChannelReadComplete();
     		}else if (Smp.HEARTBEAT_PING.equals(str)){
     			//自定义的PING,PONG心跳处理器（逻辑心跳，不是TCP协议自动实现的心跳）
     			log.info("Got PING from peer side and sent PONG back, if send failed, channel will be closed!");
     			ctx.writeAndFlush(ByteBuf4PONG.duplicate()).addListener(
     					ChannelFutureListener.CLOSE_ON_FAILURE);
-//    			TODO：是否能补充一个自定义event时间，当收到PONG的时候认为OK，否则就CLOSED通道channel.
+    			//TODO：是否能补充一个自定义event事件，用异步future事件监听listener机制来监听
+    			//是否到PONG的回复，没收到就优雅退出.如果定义了就不需要下面对PONG的接收机制了。
     			//中断消息处理，不让其他handle处理
-    			ctx.fireChannelReadComplete();   		
+//    			ctx.fireChannelReadComplete();   
     		}else if(Smp.HEARTBEAT_PONG.equals(str)){
     			log.info("Got PONG from peer side and ensure it is alive!");
-    			//TODO:怎么确认这个PONG是上一个PING呢？待完善！
     			//中断消息处理，不让其他handle处理
-    			ctx.fireChannelReadComplete(); 
+//    			ctx.fireChannelReadComplete(); 
     		}else {
     			//其他字节或字符串一律不做处理，触发后面handler继续read；
-    			ctx.fireChannelRead(msg);
+//    			ctx.fireChannelRead(msg);
+    			log.warn("心跳消息解析错误：流转到最后的非业务消息，也不是心跳消息，所以错误！ msg=["+msg+"].");
     		}
     	}
     }
@@ -115,7 +119,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
 //    	log.info("Got event 'channelReadComplete'.");
-//       ctx.flush();
+       ctx.flush();
     }
     
     @Override

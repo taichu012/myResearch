@@ -61,6 +61,12 @@ public class IniReader {
 		}
 	}
 
+	/**
+	 * 
+	 * @param section
+	 * @param name
+	 * @return value
+	 */
 	public String getValue(String section, String name) {
 		Properties p = (Properties) sections.get(section);
 		if (p == null) {
