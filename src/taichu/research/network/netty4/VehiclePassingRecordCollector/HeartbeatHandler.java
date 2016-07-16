@@ -127,17 +127,17 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
         ctx.close();
     }
     
-    @Override
-    public boolean isSharable() {
-        //说明：http://my.oschina.net/xinxingegeya/blog/295577
-    	//举例：http://www.myexception.cn/software-architecture-design/1256248.html
-    	//推测：@Sharable是加载class前面的annotation，用来说明handler是可以被反复利用，反复放在pool中的。
-    	//    否则应该就用1个线程1次性使用，并考虑合理退出exit机制，而不应该用多线程或pool机制；
-    	//    当client断开连接后，handler被回收等待再利用，此时没有sharable就会报错。
-    	
-    	log.debug("Got event ‘isSharable’.");
-        return super.isSharable();
-    }
+//    @Override
+//    public boolean isSharable() {
+//        //说明：http://my.oschina.net/xinxingegeya/blog/295577
+//    	//举例：http://www.myexception.cn/software-architecture-design/1256248.html
+//    	//推测：@Sharable是加载class前面的annotation，用来说明handler是可以被反复利用，反复放在pool中的。
+//    	//    否则应该就用1个线程1次性使用，并考虑合理退出exit机制，而不应该用多线程或pool机制；
+//    	//    当client断开连接后，handler被回收等待再利用，此时没有sharable就会报错。
+//    	
+//    	log.debug("Got event ‘isSharable’.");
+//        return super.isSharable();
+//    }
     
  //TODO:等待验证，register与否，active与否，如果不继承和override，系统会自动按照pipeline继续channel chain吗？
     

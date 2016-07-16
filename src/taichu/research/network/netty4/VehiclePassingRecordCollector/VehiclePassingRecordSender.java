@@ -124,8 +124,11 @@ public final class VehiclePassingRecordSender {
                      ByteBuf delimiter_mac = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForMac());
                      //hint：netty框架中，拆分粘包可用如下decoder，组装消息发出去前则需要自己添加line分界符；
                      //为decoder添加多个分界符；
-                     p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
-                    		 true,false,delimiter_win,delimiter_linux,delimiter_mac));  
+//                     p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
+//                    		 true,false,delimiter_win,delimiter_linux,delimiter_mac));
+                   p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
+            		 true,false,Unpooled.copiedBuffer(Smp.EOL.getBytes())));
+                     
                      p.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
                      
                      
@@ -227,16 +230,11 @@ public final class VehiclePassingRecordSender {
 		}
 	}
 	
-	public static void RunForever() throws Exception{
-    	String csvFilename = "D:\\SourceRemote\\git\\MyResearch\\src\\taichu\\research\\network\\netty4\\VehiclePassingRecordCollector\\VehiclePassingRecordDemo.csv";
+	private static String getMessage(){
+    	String csvFilename = "h:\\Source\\git\\MyResearch\\src\\taichu\\research\\network\\netty4\\VehiclePassingRecordCollector\\VehiclePassingRecordDemo.csv";
     	ConcurrentHashMap<String, String> linesMap = T.getT().file.getLinesWithMD5KeyFromFile(csvFilename);
     	StringBuffer message=new StringBuffer(); 
-
-		long t0 = System.nanoTime();
-		long MAX_RUN=10000000000l;
-		long count =0l;
     	
-    	while (count<=200000){
     	for(Entry<String, String> line: linesMap.entrySet() ){ 
 	    	//根据SMP协议，section1放入MD5校验值，后面添加上其他sections
 	    	//添加MD5值为头
@@ -245,20 +243,47 @@ public final class VehiclePassingRecordSender {
 	    	//转换value中的csv的逗号为竖杠“|”
 	    	message.append((line.getValue()).replace(',','|'));
 	    	message.append(Smp.EOL);
-//	        log.debug("gen 1 message=["+message.toString()+"]"); 
     	}
+    	return message.toString();
+
+	}
+	
+	private static void RunForever() throws Exception{
+
+		long t0 = System.nanoTime();
+		long MAX_RUN=10000000000l;
+		long count =0l;
+		
+		//TEST: how long msg is suitable
+		StringBuilder msg=new StringBuilder();
+		for (int i=0; i<1; i++){
+			msg.append(getMessage());
+		}
+    	
+    	while (count<=2000000){
+//    	for(Entry<String, String> line: linesMap.entrySet() ){ 
+//	    	//根据SMP协议，section1放入MD5校验值，后面添加上其他sections
+//	    	//添加MD5值为头
+//	    	message.append(line.getKey());
+//	    	message.append(Smp.EOS);
+//	    	//转换value中的csv的逗号为竖杠“|”
+//	    	message.append((line.getValue()).replace(',','|'));
+//	    	message.append(Smp.EOL);
+////	        log.debug("gen 1 message=["+message.toString()+"]"); 
+//    	}
     		//send message
-    		VehiclePassingRecordSender.sendMsg(message.toString());
+    		VehiclePassingRecordSender.sendMsg(msg.toString());
+//    		VehiclePassingRecordSender.sendMsg("a|b\r\n");
 
 			if (count%100000==0) {
 				long delta=System.nanoTime() - t0;
 		    	log.info("Total sent MSG=" + count+", in "+(delta)/1000/1000+"ms, AVG="
 		    			+ (float)count*1000*1000*1000/delta 
-		    			+ "CAPS, "+(message.toString().getBytes().length*count)/1000/8*1000*1000*1000/delta +"KBps.");
+		    			+ "CAPS, "+(msg.toString().getBytes().length*count)/1000/8*1000*1000*1000/delta +"KBps.");
 
 			}
-    		//清空message容器
-    		message.delete(0,message.length());
+//    		//清空message容器
+//    		message.delete(0,message.length());
 			count++;
     	}
 

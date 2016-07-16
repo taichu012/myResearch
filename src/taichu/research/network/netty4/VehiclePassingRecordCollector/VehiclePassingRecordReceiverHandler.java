@@ -39,7 +39,7 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
     		oneMsg=msg.toString();
     		bytes+=oneMsg.getBytes().length;
 //    		log.debug("Got a msg from client,msg=["+oneMsg+"]，bytes["+oneMsg.getBytes().length+"]");
-    		if (msg.toString().length()<=0){
+    		if (msg.toString().length()==0){
         		log.error("Got a empty msg from client!");
     			badMsgReceivedCount++;
     			return;
@@ -96,9 +96,9 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
 		
 		//response format please refer to protocol in VehiclePassingRecordBasedOnSmp
     	resp.append(msgid);//msgid got from client
-    	resp.append(Delimiters.Delimiter_verticalbar);//"|" as delimiter
+    	resp.append(Smp.EOS);//"|" as delimiter
     	resp.append(System.currentTimeMillis());//server nanotime for client
-    	resp.append(Delimiters.getLineDelimiterStrForWin()); //line delimiter
+    	resp.append(Smp.EOL); //line delimiter
     	
     	return resp.toString();
     }

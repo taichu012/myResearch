@@ -110,8 +110,11 @@ public final class VehiclePassingRecordReceiver {
 							ByteBuf delimiter_linux = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForLinux());
 							ByteBuf delimiter_mac = Unpooled.copiedBuffer(Delimiters.getLineDelimiterBytesForMac());
 
-							p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
-									true, false, delimiter_win, delimiter_linux, delimiter_mac));
+//							p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
+//									true, false, delimiter_win, delimiter_linux, delimiter_mac));
+							
+			                   p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
+			                  		 true,false,Unpooled.copiedBuffer(Smp.EOL.getBytes())));
 
 							// Decodes a received ByteBuf into a String. Please
 							// note that this decoder
