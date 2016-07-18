@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.VehiclePassingRecordCollector.vpr;
 
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
@@ -26,8 +26,9 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Smp;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.Conf;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.VehiclePassingRecordBasedOnSmp;
 import taichu.research.tool.IniReader;
 
 /**
@@ -43,9 +44,11 @@ import taichu.research.tool.IniReader;
  */
 public final class VehiclePassingRecordReceiver {
 	private static Logger log = Logger.getLogger(VehiclePassingRecordReceiver.class);
-	private static String CONFIG_INI_FILENAME="D:\\resource\\git\\MyResearch\\src\\"
-			+"taichu\\research\\network\\netty4\\VehiclePassingRecordCollector\\config.ini";
-	private final static IniReader conf= new IniReader(CONFIG_INI_FILENAME);
+//	private static String CONFIG_INI_FILENAME="D:\\resource\\git\\MyResearch\\src\\"
+//			+"taichu\\research\\network\\netty4\\VehiclePassingRecordCollector\\config.ini";
+//	private final static IniReader conf= new IniReader(CONFIG_INI_FILENAME);
+	
+	private final static IniReader conf= new IniReader(Conf.getIniPathRelative());
 	
 
 	static final boolean SSL = System.getProperty("ssl") != null;

@@ -70,3 +70,12 @@ H0008：  netty框架相关经验
 	非常重要的一点是自定义的n个handler之间的关系，自己最清楚，然后他们之间的逻辑通过调用ctx.fireChannelXXXX()方法传递下去；
 	详见ctx的方法提示，非常重要，否则会卡死在channel chain（pipeline）的第一个handler中！
 	
+H0009： eclipse无法自动编译class的问题
+	http://blog.sina.com.cn/s/blog_accc22d201019wn5.html
+	1.如果是红色感叹号在项目前面，可能是build配置上某个文件丢失；
+	2.如果是大叉，尤其是某个class类源码的大叉，那是语法错误，语法错误可以不修改而运行其他好的class文件；
+	3.如果在经常重新build（clean后或refresh后）后发现error无法删除bin目录下的输出文件夹的某个子文件；
+	    ！！！很可能是通过OS打开了某个文件（比如打开了notepad在修改一个config.ini文件，而不是从eclipse打开的！）会导致build问题！！！
+	    
+	    
+	

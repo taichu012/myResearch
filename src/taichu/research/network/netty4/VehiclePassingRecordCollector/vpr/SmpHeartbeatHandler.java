@@ -1,7 +1,7 @@
 /**
  * 
  */
-package taichu.research.network.netty4.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.VehiclePassingRecordCollector.vpr;
 
 import org.apache.log4j.Logger;
 
@@ -15,8 +15,8 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Smp;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.VehiclePassingRecordBasedOnSmp;
 
 /**
  * @author taichu

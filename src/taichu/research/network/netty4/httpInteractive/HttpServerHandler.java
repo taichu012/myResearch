@@ -44,7 +44,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             ByteBuf buf = Unpooled.wrappedBuffer(content.content());
             
             String msgstr=buf.toString(CharsetUtil.UTF_8);
-			if ((System.nanoTime()-t0) % 100 == 0) {
+			if ((System.nanoTime()-t0) % 10000 == 0) {
 				System.out.println("HttpClient说："+msgstr);
 			}
             buf.release();

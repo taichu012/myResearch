@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.VehiclePassingRecordCollector.vpr;
 
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,8 +31,8 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Smp;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.VehiclePassingRecordBasedOnSmp;
 import taichu.research.tool.Delimiters;
 import taichu.research.tool.IniReader;
 import taichu.research.tool.T;

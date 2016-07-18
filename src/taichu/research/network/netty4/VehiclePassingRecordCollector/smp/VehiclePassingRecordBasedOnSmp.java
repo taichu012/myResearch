@@ -1,7 +1,7 @@
 /**
  * 
  */
-package taichu.research.network.netty4.VehiclePassingRecordCollector.protocal;
+package taichu.research.network.netty4.VehiclePassingRecordCollector.smp;
 
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
 import taichu.research.tool.T;

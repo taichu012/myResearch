@@ -87,7 +87,7 @@ public class HttpClient {
 				}
 				
 	    		//每一定间隔输出统计信息
-				if (count%10000==0) {
+				if (count%50000==0) {
 					long delta=System.nanoTime() - t0;
 			    	log.info("Total sent MSG=" + count+", in "+(delta)/1000/1000+"ms, AVG="
 			    			+ (float)count*1000*1000*1000/delta 

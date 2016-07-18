@@ -1,10 +1,10 @@
-package taichu.research.network.netty4.VehiclePassingRecordCollector;
+package taichu.research.network.netty4.VehiclePassingRecordCollector.vpr;
 
 import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.Smp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
 
 /**
  * 实现消息的处理

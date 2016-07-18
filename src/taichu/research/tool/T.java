@@ -19,17 +19,20 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.vpr.VehiclePassingRecordSenderHandler;
 
 /**
  * @author taichu
  *
  */
 public class T {
+	
+	private static Logger log = Logger.getLogger(T.class);
 
 	//NOTICE: define sub topic as "reflect" here as public variable
 	//        then, define a inner class named "reflect" to hold function for sub topic
@@ -37,6 +40,7 @@ public class T {
 	public static volatile  Reflect reflect = null;
 	public static volatile  Time time=null;
 	public static volatile  File file=null;
+	public static volatile  OSSys ossys=null;
 
 
 	/**
@@ -46,6 +50,7 @@ public class T {
 		Reflect.getReflect();
 		File.getFile();
 		Time.getTime();
+		OSSys.getOsSys();
 	}
 	private static T instance = null;
 
@@ -285,7 +290,7 @@ public class T {
 			//test OutputBeanFieldsAsCsvLine
 			System.out.println(r.genOneCsvLineFromClassFields(
 					r.getClazz("taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord")));
-			System.out.println(r.genTwoCsvLineFromBeanAttributesAndValues(new taichu.research.network.netty4.VehiclePassingRecordCollector.protocal.VehiclePassingRecordBasedOnSmp()));
+			System.out.println(r.genTwoCsvLineFromBeanAttributesAndValues(new taichu.research.network.netty4.VehiclePassingRecordCollector.smp.VehiclePassingRecordBasedOnSmp()));
 			System.out.println(r.genTwoCsvLineFromBeanAttributesAndValues(new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord()));
 			String cvsLine="<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>";
 			taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord record =
@@ -395,6 +400,96 @@ public class T {
 		public static void main(String[] args) {
 		}
 	}
-	
+
+	public static class OSSys {
+
+		public OSSys() {
+		}
+
+		public static OSSys getOsSys() {
+			if (ossys == null) {
+				ossys = new OSSys();
+			}
+			return ossys;
+		}
+
+		public void printOsSysProperties() {
+			//具体属性含义见：http://marsvaadin.iteye.com/blog/1671046
+			System.out.println("java_vendor:" + System.getProperty("java.vendor"));
+			System.out.println("java_vendor_url:" + System.getProperty("java.vendor.url"));
+			System.out.println("java_home:" + System.getProperty("java.home"));
+			System.out.println("java_class_version:" + System.getProperty("java.class.version"));
+			System.out.println("java_class_path:" + System.getProperty("java.class.path"));
+			System.out.println("os_name:" + System.getProperty("os.name"));
+			System.out.println("os_arch:" + System.getProperty("os.arch"));
+			System.out.println("os_version:" + System.getProperty("os.version"));
+			System.out.println("user_name:" + System.getProperty("user.name"));
+			System.out.println("user_home:" + System.getProperty("user.home"));
+			System.out.println("user_dir:" + System.getProperty("user.dir"));
+			System.out.println("java_vm_specification_version:" + System.getProperty("java.vm.specification.version"));
+			System.out.println("java_vm_specification_vendor:" + System.getProperty("java.vm.specification.vendor"));
+			System.out.println("java_vm_specification_name:" + System.getProperty("java.vm.specification.name"));
+			System.out.println("java_vm_version:" + System.getProperty("java.vm.version"));
+			System.out.println("java_vm_vendor:" + System.getProperty("java.vm.vendor"));
+			System.out.println("java_vm_name:" + System.getProperty("java.vm.name"));
+			System.out.println("java_ext_dirs:" + System.getProperty("java.ext.dirs"));
+			System.out.println("file_separator:" + System.getProperty("file.separator"));
+			System.out.println("path_separator:" + System.getProperty("path.separator"));
+			System.out.println("line_separator:" + System.getProperty("line.separator"));
+		}
+		
+		/**
+		 * 
+		 * @param cls - 程序所在的任一功能类（不能是java/javax/或其他类库的类）
+		 * @return 默认返回null
+		 */
+		public static String getAppPath(Class<?> cls) {
+			if (cls == null){
+				log.error("Wrong class name!");
+				return null;
+			}
+			java.net.URL url = cls.getProtectionDomain().getCodeSource().getLocation();
+			String filePath = null;
+			try {
+				filePath = java.net.URLDecoder.decode(url.getPath(), "utf-8");
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.error("Parse class path error!");
+			}
+			if (filePath.endsWith(".jar"))
+				filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
+			java.io.File file = new java.io.File(filePath);
+			filePath = file.getAbsolutePath();
+			return filePath;
+		}
+
+		/**
+		 * 
+		 * @param cls - 程序所在的任一功能类（不能是java/javax/或其他类库的类）
+		 * @return 默认返回null
+		 */
+		public static String getRealPath(Class<?> cls) {
+			if (cls == null){
+				log.error("Wrong class name!");
+				return null;
+			}
+			String realPath = cls.getClassLoader().getResource("").getFile();
+			java.io.File file = new java.io.File(realPath);
+			realPath = file.getAbsolutePath();
+			try {
+				realPath = java.net.URLDecoder.decode(realPath, "utf-8");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return realPath;
+		}
+
+
+		public static void main(String[] args) {
+			System.out.println(getRealPath(T.class));
+			System.out.println(getAppPath(T.class));
+			
+		}
+	}
 
 }
