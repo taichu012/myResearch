@@ -1,4 +1,4 @@
-package taichu.research.crossplatform.jni.java.encoder;
+package taichu.research.crossplatform.jni.videoEncoder.java.encoder;
 
 
 public class XvidEncoder {
