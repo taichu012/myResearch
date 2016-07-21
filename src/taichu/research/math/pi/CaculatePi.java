@@ -31,12 +31,12 @@ public class CaculatePi {
 		int max = 5000;
 		int max_real =50000;
 		int delta = 5000;
-		Class<?> clazz = T.getT().reflect.getClazz("taichu.research.math.pi.CaculatePi");
-		Object obj=T.getT().reflect.getObject(clazz);
-		Method m = T.getT().reflect.getMethod(clazz,key,new Class<?>[]{Integer.class});
+		Class<?> clazz = T.Reflect.getClazz("taichu.research.math.pi.CaculatePi");
+		Object obj=T.Reflect.getObject(clazz);
+		Method m = T.Reflect.getMethod(clazz,key,new Class<?>[]{Integer.class});
 		if ((m!=null)&&(obj!=null))
 		for (int j = 1; j <= max_real; j = j + delta) {
-			double piTemp = (double) T.getT().reflect.InvokeMethod(obj,m,new Object[]{j});
+			double piTemp = (double) T.Reflect.InvokeMethod(obj,m,new Object[]{j});
 			System.out.println("PI=" + piTemp 
 						+ ", alg=[" + key + "], 迭代计算次数[" + (j-1) + "], 和真实PI相差["
 						+(PI_PUBLIC-piTemp)/PI_PUBLIC*100+"%, "+(PI_PUBLIC-piTemp));
@@ -187,14 +187,14 @@ public class CaculatePi {
 		// 定义类类型
 		Class<?> clazz = null;
 		String className = "taichu.research.math.pi.CaculatePi";
-		clazz = T.getT().reflect.getClazz(className);
+		clazz = T.Reflect.getClazz(className);
 		if (clazz == null) {
 			System.out.println("Got class[" + className + "] failed! programe exit!");
 			return;
 		}
 
 		Object obj = null;
-		obj = T.getT().reflect.getObject(clazz);
+		obj = T.Reflect.getObject(clazz);
 		if (obj == null) {
 			System.out.println("Got Object of [" + className + "] failed! programe exit!");
 			return;
@@ -208,7 +208,7 @@ public class CaculatePi {
 			value = map.getValue();
 
 			Method method = null;
-			method = T.getT().reflect.getMethod(clazz, key, new Class<?>[]{Integer.class});
+			method = T.Reflect.getMethod(clazz, key, new Class<?>[]{Integer.class});
 			if (clazz == null) {
 				System.out.println("Got method[" + key + "] failed! programe exit!");
 				return;
@@ -217,7 +217,7 @@ public class CaculatePi {
 //			ret = (double) T.getT().reflect.InvokeMethod(obj, method);
 			//TODO 增加输入值CACULATE_MAX_TIMES
 			Object[] args=new Object[]{(Object)CACULATE_MAX_TIMES};
-			ret = (double) T.getT().reflect.InvokeMethod(obj, method,args);
+			ret = (double) T.Reflect.InvokeMethod(obj, method,args);
 			System.out.println("PI=" + ret + ", alg=[" + value + "], 函数[" + key + "]");
 		}
 	}

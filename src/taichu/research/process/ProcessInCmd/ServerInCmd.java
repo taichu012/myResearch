@@ -109,7 +109,7 @@ public class ServerInCmd implements Runnable, IExitHandling {
 		} finally {
 			if (p != null) {
 				p.destroy();
-				System.out.println("Process [PID=" + T.getT().GetPIDWithDomain() + "] is destoried!");
+				System.out.println("Process [PID=" + T.GetPIDWithDomain() + "] is destoried!");
 			}
 			System.out.println("If goes here, thread-[" + Thread.currentThread().getName() + "|"
 					+ Thread.currentThread().getId() + "] stopped after his son(process) is finished.");

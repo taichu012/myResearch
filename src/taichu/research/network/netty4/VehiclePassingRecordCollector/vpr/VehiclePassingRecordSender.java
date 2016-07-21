@@ -200,7 +200,7 @@ public final class VehiclePassingRecordSender {
 	private static String genMsg(){
     	String csvFile=conf.getValue("vprc.client.config", "vprc.client.msg.csvfile");
     	
-    	ConcurrentHashMap<String, String> linesMap = T.getT().file.getLinesWithMD5KeyFromFile(csvFile);
+    	ConcurrentHashMap<String, String> linesMap = T.File.getLinesWithMD5KeyFromFile(csvFile);
     	StringBuffer message=new StringBuffer(); 
     	
     	for(Entry<String, String> line: linesMap.entrySet() ){ 

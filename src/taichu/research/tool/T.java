@@ -34,32 +34,16 @@ public class T {
 	
 	private static Logger log = Logger.getLogger(T.class);
 
-	//NOTICE: define sub topic as "reflect" here as public variable
-	//        then, define a inner class named "reflect" to hold function for sub topic
-	//        why to do this? it's easy and obviously to use as T.getT().subtopic.functionX();
-	public static volatile  Reflect reflect = null;
-	public static volatile  Time time=null;
-	public static volatile  File file=null;
-	public static volatile  OSSys ossys=null;
-
+	//NOTICE: 
+	//T是总的帮助类，内部子静态类是分门别类的方便使用的，比如反射Reflect类，File，OSSys，Time等；
+	//需要子类细分的请建立新的静态类（public static class）
+	
 
 	/**
 	 * 
 	 */
-	public T() {
-		Reflect.getReflect();
-		File.getFile();
-		Time.getTime();
-		OSSys.getOsSys();
-	}
-	private static T instance = null;
+//	public T() {}
 
-	public static T getT() {
-		if (instance == null) {
-			instance = new T();
-		}
-		return instance;
-	}
 
 	/**
 	 * @param args
@@ -68,14 +52,14 @@ public class T {
 		// TODO：maybe need more test case in future
 	}
 
-	public String GetPID() {
+	public static String GetPID() {
 		String name = ManagementFactory.getRuntimeMXBean().getName();
 		// System.out.println(name);
 		// get pid from pid@domain
 		return name.split("@")[0];
 	}
 
-	public String GetPIDWithDomain() {
+	public static String GetPIDWithDomain() {
 		String name = ManagementFactory.getRuntimeMXBean().getName();
 		// System.out.println(name);
 		// get pid@DOMAIN
@@ -83,17 +67,17 @@ public class T {
 	}
 
 	@SuppressWarnings("static-access")
-	public String GetThreadName(Thread t) {
+	public static String GetThreadName(Thread t) {
 		return t.currentThread().getName();
 	}
 
-	long currentTime = System.currentTimeMillis();
+	//long currentTime = System.currentTimeMillis();
 
-	public String getDateTimeFromCurrentTimeMillis() {
-		return getDateTimeFromCurrentTimeMillis(System.currentTimeMillis());
+	public static String getDateTimeNow() {
+		return getDateTimeNow(System.currentTimeMillis());
 	}
 	
-	public String getDateTimeFromCurrentTimeMillis(long ms) {
+	public static String getDateTimeNow(long ms) {
 
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy年-MM月dd日-HH时mm分ss秒");
 		Date date = new Date(ms);
@@ -117,20 +101,8 @@ public class T {
 
 	
 	public static class Reflect {
-		
-		public Reflect(){}
-		public static Reflect getReflect() {
-			if (reflect == null) {
-				reflect = new Reflect();
-			}
-			return reflect;
-		}
-		
-		/*
-		 * java反射相关工具类
-		 */
 
-		public Class<?> getClazz(String className) {
+		public static Class<?> getClazz(String className) {
 			// 定义类类型
 			Class<?> clazz = null;
 			try {
@@ -142,7 +114,7 @@ public class T {
 			return clazz;
 		}
 
-		public Object getObject(Class<?> clazz) {
+		public static Object getObject(Class<?> clazz) {
 			Object obj = null;
 			try {
 				// 申请类实例
@@ -155,7 +127,7 @@ public class T {
 			return obj;
 		}
 
-		public Method getMethod(Class<?> clazz, String methodName) {
+		public static Method getMethod(Class<?> clazz, String methodName) {
 			Method m = null;
 			try {
 				m = clazz.getDeclaredMethod(methodName);
@@ -167,7 +139,7 @@ public class T {
 			return m;
 		}
 
-		public Method getMethod(Class<?> clazz, String methodName, Class<?>[] argTypes) {
+		public static Method getMethod(Class<?> clazz, String methodName, Class<?>[] argTypes) {
 			Method m = null;
 			try {
 				m = clazz.getDeclaredMethod(methodName, argTypes);
@@ -179,7 +151,7 @@ public class T {
 			return m;
 		}
 
-		public Object InvokeMethod(Object obj, Method m) {
+		public static Object InvokeMethod(Object obj, Method m) {
 			Object ret = null;
 			if ((m != null) && (obj != null)) {
 				try {
@@ -199,7 +171,7 @@ public class T {
 
 		}
 
-		public Object InvokeMethod(Object obj, Method m, Object[] args) {
+		public static Object InvokeMethod(Object obj, Method m, Object[] args) {
 			Object ret = null;
 			if ((m != null) && (obj != null)) {
 				try {
@@ -218,7 +190,7 @@ public class T {
 			return ret;
 		}
 		
-		public String genOneCsvLineFromClassFields(Class<?> clazz){
+		public static String genOneCsvLineFromClassFields(Class<?> clazz){
 			Field[] fs = clazz.getDeclaredFields();  
 			StringBuilder csvLine=new StringBuilder();
 			for(int i = 0 ; i < fs.length; i++){  
@@ -231,7 +203,7 @@ public class T {
 		}
 		
 		
-		public String genTwoCsvLineFromBeanAttributesAndValues(Object obj){
+		public static String genTwoCsvLineFromBeanAttributesAndValues(Object obj){
 			Field[] fs = obj.getClass().getDeclaredFields();  
 			StringBuilder csvHeadLine = new StringBuilder();
 			StringBuilder csvBodyLine = new StringBuilder();
@@ -255,7 +227,7 @@ public class T {
 			return csvHeadLine.toString()+"\r\n"+csvBodyLine.toString();
 		}
 		
-		public Object InputCsvLine2Entity(String csvLine, Class<?> clazz){
+		public static Object InputCsvLine2Entity(String csvLine, Class<?> clazz){
 			
 			Object ret=null;
 			if (csvLine==null||csvLine.length()==0) return ret;
@@ -303,24 +275,8 @@ public class T {
 		}
 		
 	}
-	
-	
-	
-	public void test() {
-		//
-	}
 
 	public static class Time {
-
-		public Time() {
-		}
-
-		public static Time getTime() {
-			if (time == null) {
-				time = new Time();
-			}
-			return time;
-		}
 
 		//test nanoTime and BigDecimal
 		public static void main(String[] args) {
@@ -339,15 +295,7 @@ public class T {
 	
 	public static class File {
 		
-		public File(){}
-		public static File getFile() {
-			if (file == null) {
-				file = new File();
-			}
-			return file;
-		}
-		
-		public ConcurrentHashMap<String, String> getLinesWithMD5KeyFromFile(String filename){
+		public static ConcurrentHashMap<String, String> getLinesWithMD5KeyFromFile(String filename){
 			ConcurrentHashMap<String, String> linesMap = new ConcurrentHashMap<String, String>(); 
 			BufferedReader reader = null;
 			try {
@@ -370,7 +318,7 @@ public class T {
 			return linesMap;
 		}
 		
-		public String genMD5(String data) { 
+		public static String genMD5(String data) { 
 	        MessageDigest md = null;
 	        StringBuffer buf = new StringBuffer(); 
 			try {
@@ -403,17 +351,8 @@ public class T {
 
 	public static class OSSys {
 
-		public OSSys() {
-		}
 
-		public static OSSys getOsSys() {
-			if (ossys == null) {
-				ossys = new OSSys();
-			}
-			return ossys;
-		}
-
-		public void printOsSysProperties() {
+		public static void printOsSysProperties() {
 			//具体属性含义见：http://marsvaadin.iteye.com/blog/1671046
 			System.out.println("java_vendor:" + System.getProperty("java.vendor"));
 			System.out.println("java_vendor_url:" + System.getProperty("java.vendor.url"));
@@ -488,6 +427,7 @@ public class T {
 		public static void main(String[] args) {
 			System.out.println(getRealPath(T.class));
 			System.out.println(getAppPath(T.class));
+			printOsSysProperties();
 			
 		}
 	}

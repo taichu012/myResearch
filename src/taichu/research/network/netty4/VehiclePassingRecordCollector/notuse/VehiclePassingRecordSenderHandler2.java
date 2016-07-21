@@ -44,7 +44,7 @@ public class VehiclePassingRecordSenderHandler2 extends ChannelInboundHandlerAda
     	//但这个可以用来测试netty的健壮性，这里的example可以用，可达15000CAPS，基本无错。
     	log.info("Got event 'channelActive'.");
     	String csvFilename = "D:\\SourceRemote\\git\\MyResearch\\src\\taichu\\research\\network\\netty4\\VehiclePassingRecordCollector\\VehiclePassingRecordDemo.csv";
-    	ConcurrentHashMap<String, String> linesMap = T.getT().file.getLinesWithMD5KeyFromFile(csvFilename);
+    	ConcurrentHashMap<String, String> linesMap = T.File.getLinesWithMD5KeyFromFile(csvFilename);
     	StringBuffer message=new StringBuffer(); 
     	ByteBuf resp =null;
     	

@@ -95,7 +95,7 @@ public class IniReader {
 		//用断言来测试
 		assert (value == null);
 		System.out.println("value should be null. value=" + value);
-
+		
 	}
 
 }

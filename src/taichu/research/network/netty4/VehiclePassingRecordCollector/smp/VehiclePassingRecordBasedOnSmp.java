@@ -27,7 +27,7 @@ public class VehiclePassingRecordBasedOnSmp extends VehiclePassingRecord impleme
 	}
 	
 	public static String genLineFromMsg(VehiclePassingRecord msg){
-		return T.getT().reflect.genTwoCsvLineFromBeanAttributesAndValues(msg);
+		return T.Reflect.genTwoCsvLineFromBeanAttributesAndValues(msg);
 	}
 
 
