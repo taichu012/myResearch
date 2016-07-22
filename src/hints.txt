@@ -77,5 +77,13 @@ H0009： eclipse无法自动编译class的问题
 	3.如果在经常重新build（clean后或refresh后）后发现error无法删除bin目录下的输出文件夹的某个子文件；
 	    ！！！很可能是通过OS打开了某个文件（比如打开了notepad在修改一个config.ini文件，而不是从eclipse打开的！）会导致build问题！！！
 	    
-	    
+H0010：关于maven
+（maven和ant的不同是，ant给你工具你自己造房子，maven不止给你工具，还提供造房子的理念和模板并建议你按照规则造房子，这也导致了maven的工具更强大）
+	1.maven一个小例子小介绍（http://zhanghua.1199.blog.163.com/blog/static/464498072013112222746461/）
+	2.maven的生命周期介绍（http://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html#Packaging）	
+	3.maven的plugin介绍（http://maven.apache.org/plugins/）    
+	
+	
+	
+	
 	
