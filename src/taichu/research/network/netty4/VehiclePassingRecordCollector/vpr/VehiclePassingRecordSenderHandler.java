@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.ISmp;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
 
 /**

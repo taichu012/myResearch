@@ -258,18 +258,17 @@ public class T {
 		
 		public static void main(String[] args){
 			
-			Reflect r=new Reflect();
 			//test OutputBeanFieldsAsCsvLine
-			System.out.println(r.genOneCsvLineFromClassFields(
-					r.getClazz("taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord")));
-			System.out.println(r.genTwoCsvLineFromBeanAttributesAndValues(new taichu.research.network.netty4.VehiclePassingRecordCollector.smp.VehiclePassingRecordBasedOnSmp()));
-			System.out.println(r.genTwoCsvLineFromBeanAttributesAndValues(new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord()));
+			System.out.println(T.Reflect.genOneCsvLineFromClassFields(
+					T.Reflect.getClazz("taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord")));
+			System.out.println(T.Reflect.genTwoCsvLineFromBeanAttributesAndValues(new taichu.research.network.netty4.VehiclePassingRecordCollector.notuse.VehiclePassingRecordBasedOnSmp()));
+			System.out.println(T.Reflect.genTwoCsvLineFromBeanAttributesAndValues(new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord()));
 			String cvsLine="<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>,<null>";
 			taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord record =
 					new taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord();
-			record=(VehiclePassingRecord) r.InputCsvLine2Entity(cvsLine,record.getClass());
+			record=(VehiclePassingRecord) T.Reflect.InputCsvLine2Entity(cvsLine,record.getClass());
 			if (record!=null){
-				System.out.println(r.genTwoCsvLineFromBeanAttributesAndValues(record));
+				System.out.println(T.Reflect.genTwoCsvLineFromBeanAttributesAndValues(record));
 				
 			}
 		}

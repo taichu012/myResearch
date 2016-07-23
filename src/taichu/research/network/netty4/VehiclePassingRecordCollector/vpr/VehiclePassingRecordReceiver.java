@@ -27,8 +27,9 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.Conf;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.notuse.VehiclePassingRecordBasedOnSmp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.ISmp;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.VehiclePassingRecordBasedOnSmp;
 import taichu.research.tool.IniReader;
 
 /**
@@ -59,7 +60,7 @@ public final class VehiclePassingRecordReceiver {
 	static final int PORT = Integer.parseInt(conf.getValue(
 			"vprc.server.config", "vprc.server.port"));
 	
-	static final int SIZE = VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH;
+	static final int SIZE = Smp.MSG_LINE_MAX_LENGTH;
 
 	/** 用于分配处理业务线程的线程组个数 */
 	protected static final int BIZ_GROUP_SIZE = Runtime.getRuntime().availableProcessors() * 2; 
@@ -126,8 +127,8 @@ public final class VehiclePassingRecordReceiver {
 //							p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
 //									true, false, delimiter_win, delimiter_linux, delimiter_mac));
 							
-			                   p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
-			                  		 true,false,Unpooled.copiedBuffer(Smp.EOL.getBytes())));
+			                   p.addLast(new DelimiterBasedFrameDecoder(Smp.MSG_LINE_MAX_LENGTH,
+			                  		 true,false,Unpooled.copiedBuffer(ISmp.EOL.getBytes())));
 
 							// Decodes a received ByteBuf into a String. Please
 							// note that this decoder
@@ -140,8 +141,8 @@ public final class VehiclePassingRecordReceiver {
 
 							// 添加netty框架自带的控制读超时，写超时告警handler！
 							// 此超时检测并发送单向心跳的handler不参与消息具体业务处理。
-							p.addLast(new IdleStateHandler(Smp.READ_IDEL_TIMEOUT_S, Smp.WRITE_IDEL_TIMEOUT_S,
-									Smp.ALL_IDEL_TIMEOUT_S, TimeUnit.SECONDS)); //
+							p.addLast(new IdleStateHandler(ISmp.READ_IDEL_TIMEOUT_S, ISmp.WRITE_IDEL_TIMEOUT_S,
+									ISmp.ALL_IDEL_TIMEOUT_S, TimeUnit.SECONDS)); //
 
 							//自定义的VPR的消息解析器
 							p.addLast("vprReceiverHandler", new VehiclePassingRecordReceiverHandler());

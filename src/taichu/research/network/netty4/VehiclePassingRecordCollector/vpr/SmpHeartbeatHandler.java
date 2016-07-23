@@ -15,8 +15,8 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.VehiclePassingRecordBasedOnSmp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.notuse.VehiclePassingRecordBasedOnSmp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.ISmp;
 
 /**
  * @author taichu
@@ -26,23 +26,23 @@ import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.VehicleP
 
 public class SmpHeartbeatHandler extends ChannelInboundHandlerAdapter {
 	private static Logger log = Logger.getLogger(SmpHeartbeatHandler.class);
-	private static final String TIMEOUT_LOG_STR="read timeout："+Smp.READ_IDEL_TIMEOUT_S
-			+"s, write timeout:"+Smp.WRITE_IDEL_TIMEOUT_S
-			+"s, all idle timeout:"+Smp.ALL_IDEL_TIMEOUT_S;
+	private static final String TIMEOUT_LOG_STR="read timeout："+ISmp.READ_IDEL_TIMEOUT_S
+			+"s, write timeout:"+ISmp.WRITE_IDEL_TIMEOUT_S
+			+"s, all idle timeout:"+ISmp.ALL_IDEL_TIMEOUT_S;
 
 	private static final ByteBuf ByteBuf4PING = Unpooled
 			.unreleasableBuffer(Unpooled.copiedBuffer(
-					Smp.HEARTBEAT_PING+Smp.EOL,CharsetUtil.UTF_8));  
+					ISmp.HEARTBEAT_PING+ISmp.EOL,CharsetUtil.UTF_8));  
 	
 	private static final ByteBuf ByteBuf4PONG = Unpooled
 			.unreleasableBuffer(Unpooled.copiedBuffer(
-					Smp.HEARTBEAT_PONG+Smp.EOL,CharsetUtil.UTF_8)); 
+					ISmp.HEARTBEAT_PONG+ISmp.EOL,CharsetUtil.UTF_8)); 
 	
 	// Return a unreleasable view on the given ByteBuf
 	// which will just ignore release and retain calls.
 	private static final ByteBuf ByteBuf4HB = Unpooled
 			.unreleasableBuffer(Unpooled.copiedBuffer(
-					Smp.HEARTBEAT_HB+Smp.EOL,CharsetUtil.UTF_8)); 
+					ISmp.HEARTBEAT_HB+ISmp.EOL,CharsetUtil.UTF_8)); 
 
 	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt)
@@ -90,11 +90,11 @@ public class SmpHeartbeatHandler extends ChannelInboundHandlerAdapter {
     	}else {
     		String str=msg.toString();
     		
-       		if (Smp.HEARTBEAT_HB.equals(str)){
+       		if (ISmp.HEARTBEAT_HB.equals(str)){
     			log.info("Got 'HB'2chars and ensure peer side is alive! Do nothing!");
     			//中断消息处理，不让其他handle处理
 //    			ctx.fireChannelReadComplete();
-    		}else if (Smp.HEARTBEAT_PING.equals(str)){
+    		}else if (ISmp.HEARTBEAT_PING.equals(str)){
     			//自定义的PING,PONG心跳处理器（逻辑心跳，不是TCP协议自动实现的心跳）
     			log.info("Got PING from peer side and sent PONG back, if send failed, channel will be closed!");
     			ctx.writeAndFlush(ByteBuf4PONG.duplicate()).addListener(
@@ -103,7 +103,7 @@ public class SmpHeartbeatHandler extends ChannelInboundHandlerAdapter {
     			//是否到PONG的回复，没收到就优雅退出.如果定义了就不需要下面对PONG的接收机制了。
     			//中断消息处理，不让其他handle处理
 //    			ctx.fireChannelReadComplete();   
-    		}else if(Smp.HEARTBEAT_PONG.equals(str)){
+    		}else if(ISmp.HEARTBEAT_PONG.equals(str)){
     			log.info("Got PONG from peer side and ensure it is alive!");
     			//中断消息处理，不让其他handle处理
 //    			ctx.fireChannelReadComplete(); 

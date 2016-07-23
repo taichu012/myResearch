@@ -31,8 +31,9 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.notuse.VehiclePassingRecordBasedOnSmp;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.ISmp;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.VehiclePassingRecordBasedOnSmp;
 import taichu.research.tool.Delimiters;
 import taichu.research.tool.IniReader;
 import taichu.research.tool.T;
@@ -63,7 +64,7 @@ public final class VehiclePassingRecordSender {
 	static final int PORT = Integer.parseInt(conf.getValue(
 			"vprc.server.config", "vprc.server.port"));
 	
-	static final int SIZE = VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH;
+	static final int SIZE = Smp.MSG_LINE_MAX_LENGTH;
 
 	// 如果Handler 被标记为‘@Sharable’，则可以重用本地变量到不同pipeline等请，而不用每次new一个实例
     // protected static final SmpHeartbeatHandler heartbeatHandler = new SmpHeartbeatHandler();
@@ -126,14 +127,14 @@ public final class VehiclePassingRecordSender {
 //                     p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
 //                    		 true,false,delimiter_win,delimiter_linux,delimiter_mac));
                    
-                     p.addLast(new DelimiterBasedFrameDecoder(VehiclePassingRecordBasedOnSmp.MSG_LINE_MAX_LENGTH,
-            		 true,false,Unpooled.copiedBuffer(Smp.EOL.getBytes())));
+                     p.addLast(new DelimiterBasedFrameDecoder(Smp.MSG_LINE_MAX_LENGTH,
+            		 true,false,Unpooled.copiedBuffer(ISmp.EOL.getBytes())));
                      
                      p.addLast("stringDecoder", new StringDecoder(CharsetUtil.UTF_8));
                       
                      //添加netty框架自带的控制读超时，写超时告警handler.
-                     p.addLast(new IdleStateHandler(Smp.READ_IDEL_TIMEOUT_S,
-                    		 Smp.WRITE_IDEL_TIMEOUT_S, Smp.ALL_IDEL_TIMEOUT_S, TimeUnit.SECONDS)); // 
+                     p.addLast(new IdleStateHandler(ISmp.READ_IDEL_TIMEOUT_S,
+                    		 ISmp.WRITE_IDEL_TIMEOUT_S, ISmp.ALL_IDEL_TIMEOUT_S, TimeUnit.SECONDS)); // 
 
                      p.addLast("vprReceiverHandler", new VehiclePassingRecordSenderHandler());
                      
@@ -207,10 +208,10 @@ public final class VehiclePassingRecordSender {
 	    	//根据SMP协议，section1放入MD5校验值，后面添加上其他sections
 	    	//添加MD5值为头
 	    	message.append(line.getKey());
-	    	message.append(Smp.EOS);
+	    	message.append(ISmp.EOS);
 	    	//转换value中的csv的逗号为竖杠“|”
 	    	message.append((line.getValue()).replace(',','|'));
-	    	message.append(Smp.EOL);
+	    	message.append(ISmp.EOL);
     	}
     	return message.toString();
 	}

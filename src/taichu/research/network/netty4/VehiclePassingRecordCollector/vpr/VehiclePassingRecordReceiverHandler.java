@@ -6,6 +6,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.ISmp;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
 
 /**
@@ -103,9 +104,9 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
 		
 		//response format please refer to protocol in VehiclePassingRecordBasedOnSmp
     	resp.append(msgid);//msgid got from client
-    	resp.append(Smp.EOS);//"|" as delimiter
+    	resp.append(ISmp.EOS);//"|" as delimiter
     	resp.append(System.currentTimeMillis());//server nanotime for client
-    	resp.append(Smp.EOL); //line delimiter
+    	resp.append(ISmp.EOL); //line delimiter
     	
     	return resp.toString();
     }
