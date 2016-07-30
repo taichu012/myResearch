@@ -12,11 +12,8 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelOutboundInvoker;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -31,10 +28,8 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.notuse.VehiclePassingRecordBasedOnSmp;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.ISmp;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
-import taichu.research.tool.Delimiters;
 import taichu.research.tool.IniReader;
 import taichu.research.tool.T;
 
@@ -52,7 +47,7 @@ import taichu.research.tool.T;
 public final class VehiclePassingRecordSender {
 
 	private static Logger log = Logger.getLogger(VehiclePassingRecordSender.class);
-	private static String CONFIG_INI_FILENAME="D:\\resource\\git\\MyResearch\\src\\"
+	private static String CONFIG_INI_FILENAME="H:\\source\\git\\MyResearch\\src\\"
 			+"taichu\\research\\network\\netty4\\VehiclePassingRecordCollector\\config.ini";
 	private final static IniReader conf= new IniReader(CONFIG_INI_FILENAME);
 	
@@ -135,12 +130,14 @@ public final class VehiclePassingRecordSender {
                      //添加netty框架自带的控制读超时，写超时告警handler.
                      p.addLast(new IdleStateHandler(ISmp.READ_IDEL_TIMEOUT_S,
                     		 ISmp.WRITE_IDEL_TIMEOUT_S, ISmp.ALL_IDEL_TIMEOUT_S, TimeUnit.SECONDS)); // 
-
-                     p.addLast("vprReceiverHandler", new VehiclePassingRecordSenderHandler());
                      
-                     //添加自定义的处理读，写，空闲超时的handler.
-                     //此超时检测心跳的handler不参与消息具体业务处理。
-                     p.addLast("heartBeatHandler", new SmpHeartbeatHandler()); 
+					//添加自定义的处理读，写，空闲超时event的心跳handler.
+					//本来放在最后以便先处理高频业务数据，但业务数据也是字符串，需要判断是否为心跳消息，
+					//所以如果总是要判断，则应该将心跳handler放在前面；
+					p.addLast("heartBeatHandler", new SmpHeartbeatHandler());
+
+                    p.addLast("vprReceiverHandler", new VehiclePassingRecordSenderHandler());
+                     
 
                      //如下定义了OUTBOUND入栈（client->server)的消息层层包装，是按addLast定义顺序的“逆序”来处理；
                      //这里没有定义OUTBOUND，直接在MyNettyClientHandler中自己出了发送writeAndFlush，无需过多handler逻辑！

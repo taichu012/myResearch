@@ -11,6 +11,7 @@ REQ0002：实现了基于netty框架的基本的client/server收发消息，心�
 REQ0003:尝试调整handler的次序来优化；
 REQ0004：实现main启动client/server实例
 REQ0005:增加了httpclient,httpserver的实现代码；
+REQ0006:根据逻辑，还是将超时心跳handler放在前面，并重新检查了msg级联传递和引用减数；
 
 
 
@@ -56,6 +57,11 @@ TODOLIST:
             基于netty4的TCP短连接测试  http://blog.163.com/linfenliang@126/blog/static/1278571952013721101340165/
     
 2. 【OPEN】看是否借鉴以前的unioss的一些控制？比如结束，SSL，stringSocket等？
+3。【OPEN】SMP协议，或心跳协议被高频攻击的话，怎么处理？
+4. 【OPEN】将SMP改为不同子协议，将HB心跳层分开，paylord层改为原来模式，以及新增（<8位MD5>+<json>)格式，
+                             那么为配合新增的JSON模式而需要专门的handler或codec来处理；届时需要同时考虑不同handler的位置和调整代码！！！
+                             届时可能先不解析JSON而直接传给KAFKA，然后在kafka consumer中取给spark的时候再调用SMP进行JSON解析 
+
 
 
 	  

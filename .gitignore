@@ -8,3 +8,5 @@
 /MyKafkaDemo.log.2016-07-13
 /MyKafkaDemo.log.2016-07-14
 /MyKafkaDemo.log.2016-07-16
+/*.log
+/*.log.*

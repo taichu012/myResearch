@@ -27,7 +27,6 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.CharsetUtil;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.Conf;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.notuse.VehiclePassingRecordBasedOnSmp;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.ISmp;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
 import taichu.research.tool.IniReader;
@@ -144,10 +143,14 @@ public final class VehiclePassingRecordReceiver {
 							p.addLast(new IdleStateHandler(ISmp.READ_IDEL_TIMEOUT_S, ISmp.WRITE_IDEL_TIMEOUT_S,
 									ISmp.ALL_IDEL_TIMEOUT_S, TimeUnit.SECONDS)); //
 
+							//添加自定义的处理读，写，空闲超时event的心跳handler.
+							//本来放在最后以便先处理高频业务数据，但业务数据也是字符串，需要判断是否为心跳消息，
+							//所以如果总是要判断，则应该将心跳handler放在前面；
+							p.addLast("heartBeatHandler", new SmpHeartbeatHandler());
+							
 							//自定义的VPR的消息解析器
 							p.addLast("vprReceiverHandler", new VehiclePassingRecordReceiverHandler());
-							// 添加自定义的处理读，写，空闲超时的handler.
-							p.addLast("heartBeatHandler", new SmpHeartbeatHandler());
+
 
 						}
 					});

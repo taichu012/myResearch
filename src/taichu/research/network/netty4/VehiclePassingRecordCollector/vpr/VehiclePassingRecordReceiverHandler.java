@@ -6,8 +6,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.ISmp;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.Smp;
 
 /**
  * Handler implementation for the server.
@@ -26,64 +26,62 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
 
     //netty触发的event的先后关系，详查netty自带javadoc的Interface ChannelHandlerContext
 
-
     
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
     	//A Channel received a message
-//    	log.debug("Got event ‘channelRead’.");
-    	String oneMsg=null;
-    	if (msg instanceof String) {
-    		oneMsg=msg.toString();
-    		if (Smp.isHeartBeat(oneMsg)){
-    			//如果是心跳包就流到下一个handler（timeout）处理；
-    			ctx.fireChannelRead(msg);
-    			return;
-    			}
-//    		log.debug("Got a msg from client,msg=["+oneMsg+"]，bytes["+oneMsg.getBytes().length+"]");
-    		if (msg.toString().length()==0){
-        		log.error("Got a empty msg from client!");
+    	//log.debug("Got event ‘channelRead’.");
+
+    	//因为前面的心跳协议过滤了HB/PING/PONG，流转到这里的必定是其他字符串；
+    	try {
+    		String m=msg.toString();
+    		if (m.length()==0){
+        		log.error("Got ONE EMPTY msg from client!");
     			badMsgReceivedCount++;
+    			//最后一个inbound handler理应不需要对msg引用计数减一;后同！
+    			//ReferenceCountUtil.release(msg);
     			return;
     		}else {
-    			bytes+=oneMsg.getBytes().length;
+    			bytes+=m.getBytes().length;
     			goodMsgReceivedCount++;
-    		}
-    	}else {
-    		log.error("Got a bad msg from client!");
-    		badMsgReceivedCount++;
-    		return;
-    	}
-    	
-    	//handle message/record ASAP.
-    	String msgid=handleMsg(oneMsg);
-    	if ("".equals(msgid)){
-    		log.warn("Parse message error: got bad message id section!");
-    		badMsgReceivedCount++;
-    	}else {
-	    	//create response and send back to client as ACK
-    		String rspmsg=buildResponse(msgid);
-	    	ByteBuf resp = Unpooled.copiedBuffer(rspmsg.getBytes()); 
-	    	
-	    	ctx.writeAndFlush(resp);
-//	    	log.debug("Server sent response to client,response=["+createResponse(msgid)+"].");
-	    	goodMsgSentCount++;
-	    	if (goodMsgSentCount%100000==0){
-//    			log.debug(goodMsgSentCount+",send feedback["+rspmsg.toString()+"]");
-	    		printStat();
-    		}
+    			
+    	    	//handle ONE message ASAP.
+    			//TODO:考虑将SMP改为（<8位MD5>+<json>)格式，则需要专门的handler或codec来处理；
+    			//     届时需要同时考虑不同handler的位置和调整代码！！！
+    	    	String msgid=handleMsg(m);
+    	    	if ("".equals(msgid)){
+    	    		log.warn("Parse msg error: got bad msgid!");
+    	    		badMsgReceivedCount++;
+    	    	}else {
+    		    	//create response and send back to client as ACK
+    	    		String resp=buildResponse(msgid);
+    		    	ByteBuf respBB = Unpooled.copiedBuffer(resp.getBytes()); 
+    		    	
+    		    	ctx.writeAndFlush(respBB);
+//    		    	log.debug("Server sent response to client,response=["+createResponse(msgid)+"].");
+    		    	goodMsgSentCount++;
+    		    	if (goodMsgSentCount%100000==0){
+//    	    			log.debug(goodMsgSentCount+",send feedback["+rspmsg.toString()+"]");
+    		    		printStat();
+    	    		}
 
+    	    	}
+    		}
+    	}catch (Exception e){
+    		log.error("msg cannot convert toString()!");
+    		badMsgReceivedCount++;
+    		e.printStackTrace();
+    		ReferenceCountUtil.release(msg); 		
     	}
-    	
-    }
+   }
+
     /**
      * 
      * @param msg
      * @return msgid
      */
     private String handleMsg(String msg) {
-   	
-    	//output to console for testing
+ 	
 //		System.out.println("Got msg["+msg+"],length=["+msg.length()+"]");
 		
 		//TODO: Parse this message/record and resends to kafka as a producer ASAP！;
@@ -111,12 +109,12 @@ public class VehiclePassingRecordReceiverHandler extends ChannelInboundHandlerAd
     	return resp.toString();
     }
 
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-    	//leave channelRead method
-//    	log.debug("Got event ‘channelReadComplete’.");
-        ctx.flush();
-    }
+//    @Override
+//    public void channelReadComplete(ChannelHandlerContext ctx) {
+//    	//leave channelRead method
+////    	log.debug("Got event ‘channelReadComplete’.");
+//        ctx.flush();
+//    }
 
 
     @Override

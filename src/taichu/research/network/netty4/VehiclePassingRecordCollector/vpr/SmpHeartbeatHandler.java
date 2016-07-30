@@ -10,16 +10,15 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.notuse.VehiclePassingRecordBasedOnSmp;
+import io.netty.util.ReferenceCountUtil;
 import taichu.research.network.netty4.VehiclePassingRecordCollector.smp.ISmp;
 
 /**
  * @author taichu
+ * TODO：要考虑如果心跳协议被高频攻击的话，怎么处理？
  *
  */
 
@@ -71,6 +70,7 @@ public class SmpHeartbeatHandler extends ChannelInboundHandlerAdapter {
 					TIMEOUT_LOG_STR));
 			//IdleStateEvent消息到此为止，不再流转！
 			
+			
 			//当捕获超时后打印信息，并按需发送HB消息；这里参考SMP协议做法，保持TCP长链接，超时候发送2种心跳之一或全部；
 			//如果不参考SMP协议，通常的做法也很可能是探测到timeout的一端主动关闭connection；
 			
@@ -79,48 +79,54 @@ public class SmpHeartbeatHandler extends ChannelInboundHandlerAdapter {
 		}
 	}
 	
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
 //    	log.debug("Got event ‘channelRead’.");
     	
-    	if(!(msg instanceof String)){
-    		//其他字节或字符串一律不做处理，触发后面handler继续read；
-//    		ctx.fireChannelRead(msg);
-    		log.warn("心跳消息解析错误：流转到最后的非业务消息，也不是心跳消息，所以错误！ msg不是字符串.");
-    	}else {
-    		String str=msg.toString();
-    		
-       		if (ISmp.HEARTBEAT_HB.equals(str)){
+    	//因为前面一个handler是StringDecoder，所以流转到这里的msg必定是string；
+    	//不应做多余的判断，但是应该捕获异常；
+    	
+    	try {
+    		String m=msg.toString();
+       		if (ISmp.HEARTBEAT_HB.equals(m)){
     			log.info("Got 'HB'2chars and ensure peer side is alive! Do nothing!");
     			//中断消息处理，不让其他handle处理
+    			ReferenceCountUtil.release(msg);
 //    			ctx.fireChannelReadComplete();
-    		}else if (ISmp.HEARTBEAT_PING.equals(str)){
+    		}else if (ISmp.HEARTBEAT_PING.equals(m)){
     			//自定义的PING,PONG心跳处理器（逻辑心跳，不是TCP协议自动实现的心跳）
     			log.info("Got PING from peer side and sent PONG back, if send failed, channel will be closed!");
     			ctx.writeAndFlush(ByteBuf4PONG.duplicate()).addListener(
     					ChannelFutureListener.CLOSE_ON_FAILURE);
     			//TODO：是否能补充一个自定义event事件，用异步future事件监听listener机制来监听
     			//是否到PONG的回复，没收到就优雅退出.如果定义了就不需要下面对PONG的接收机制了。
+    			
     			//中断消息处理，不让其他handle处理
+    			ReferenceCountUtil.release(msg);
 //    			ctx.fireChannelReadComplete();   
-    		}else if(ISmp.HEARTBEAT_PONG.equals(str)){
+    		}else if(ISmp.HEARTBEAT_PONG.equals(m)){
     			log.info("Got PONG from peer side and ensure it is alive!");
     			//中断消息处理，不让其他handle处理
+    			ReferenceCountUtil.release(msg);
 //    			ctx.fireChannelReadComplete(); 
     		}else {
-    			//其他字节或字符串一律不做处理，触发后面handler继续read；
-//    			ctx.fireChannelRead(msg);
-    			log.warn("心跳消息解析错误：流转到最后的非业务消息，也不是心跳消息，所以错误！ msg=["+msg+"].");
+    			//其他非HB的MSG则触发后面的handler继续处理
+    			ctx.fireChannelRead(msg);
     		}
+    	}catch (Exception e){
+    		log.error("msg cannot convert toString()!");
+    		e.printStackTrace();
+    		ReferenceCountUtil.release(msg); 		
     	}
     }
     
     
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-//    	log.info("Got event 'channelReadComplete'.");
-       ctx.flush();
-    }
+//    @Override
+//    public void channelReadComplete(ChannelHandlerContext ctx) {
+////    	log.info("Got event 'channelReadComplete'.");
+//       ctx.flush();
+//    }
     
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
