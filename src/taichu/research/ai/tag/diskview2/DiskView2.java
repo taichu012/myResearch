@@ -1,4 +1,4 @@
-package taichu.research.ai.tag.diskview2;
+﻿package taichu.research.ai.tag.diskview2;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -121,7 +121,7 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 		// Listen for when the selection changes.
 		tree.addTreeSelectionListener(this);
 
-		// �ڵ㱻չ��������ѡ��û�иı䡣.
+		// 节点被展开，但是选中没有改变。.
 		tree.addTreeWillExpandListener(this);
 
 		// // Set the icon for leaf nodes.
@@ -134,7 +134,7 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 		// System.err.println("Leaf icon missing; using default.");
 		// }
 
-		// ��Ĭ�ϵ�ͼ�꣨�ļ���ͼ�꣩����Ϊleafͼ��
+		// 用默认的图标（文件夹图标）设置为leaf图标
 		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
 		renderer.setLeafIcon(renderer.getDefaultClosedIcon());
 		tree.setCellRenderer(renderer);
@@ -162,7 +162,7 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 		aScrollPane4Text.setBorder(null);
 		aScrollPane4Text.setViewportView(txtpane);
 
-		// ��ʼ��chart����
+		// 初始化chart数据
 		chartPanel = new ChartPanel(
 				this.makePieChart4FileSize(new DefaultPieDataset()));
 
@@ -171,14 +171,14 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 		aScrollPanel4ChartPanel.setViewportView(chartPanel);
 
 		tabpane = new JTabbedPane();
-		tabpane.addTab("���ӻ�", aScrollPanel4ChartPanel);
-		tabpane.addTab("��", aScrollPane4Table);
-		tabpane.addTab("�ı�", aScrollPane4Text);
+		tabpane.addTab("可视化", aScrollPanel4ChartPanel);
+		tabpane.addTab("表", aScrollPane4Table);
+		tabpane.addTab("文本", aScrollPane4Text);
 
 		splitPane.setLeftComponent(aScrollPaneLeft);
 		splitPane.setRightComponent(tabpane);
 
-		// ��TREE��ʾDIR����TABLE��ʾfile��
+		// 用TREE显示DIR，用TABLE显示file。
 		DisplayPathInTree("C://", root);
 
 	}
@@ -211,10 +211,10 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 		model.addColumn("W");
 		model.addColumn("E");
 		model.addColumn("H");
-		model.addColumn("����޸�ʱ��");
-		model.addColumn("Size��KB��");
-		model.addColumn("Size��MB��");
-		model.addColumn("����·��");
+		model.addColumn("最后修改时间");
+		model.addColumn("Size（KB）");
+		model.addColumn("Size（MB）");
+		model.addColumn("绝对路径");
 
 		// table.setModel(model);
 		// table.invalidate();
@@ -223,9 +223,9 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 	}
 
 	private void DisplayPathInTree(String path, DefaultMutableTreeNode node) {
-		// JTREE���ؼ��ڵ��ͼ���Ǹ����Ƿ���children��ȷ���Ƿ���LEAF�ġ�
+		// JTREE树控件节点的图标是根据是否有children来确定是否是LEAF的。
 
-		// pathΪ��������ΪĬ�ϡ�C://��
+		// path为空则设置为默认“C://”
 		if (path.length() == 0) {
 			path = "C://";
 		}
@@ -236,7 +236,7 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 		// table.invalidate();
 		this.RemoveAllRow(table);
 //		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		// ��ʼ������Ŀ¼��ʾ��TREE�У��������һ��Ľڵ㣨�ܼ�2�㣬������֧��Ҷ�ӵȴ�����ٴ���
+		// 初始化将根目录显示在TREE中，并添加下一层的节点（总计2层，其他分支和叶子等待点击再处理）
 		File file = new File(path);
 		if (file.exists()) {
 			// If having file OR dir under path, then produce them
@@ -268,13 +268,13 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 	}
 	
 	private void GenData4Table(String path) {
-		// pathΪ��������ΪĬ�ϡ�C://��
+		// path为空则设置为默认“C://”
 		if (path == null)
 			return;
 		this.RemoveAllRow(table);
 		TheFile oneFile = null;
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		// ��ʼ������Ŀ¼��ʾ��TREE�У��������һ��Ľڵ㣨�ܼ�2�㣬������֧��Ҷ�ӵȴ�����ٴ���
+		// 初始化将根目录显示在TREE中，并添加下一层的节点（总计2层，其他分支和叶子等待点击再处理）
 		File file = new File(path);
 		if (file.exists()) {
 			// If having file OR dir under path, then produce them
@@ -296,7 +296,7 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 	}
 
 	private void GenChart4ChartPanel(String path) {
-		// ���ļ�������chart��ͼ��
+		// 对文件集产生chart饼图。
 
 		if (path == null)
 			return;
@@ -307,14 +307,14 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 				File files[] = file.listFiles();
 				for (int i = 0; i < files.length; i++) {
 					if (files[i].isFile()) {
-						// ����ļ�����
+						// 添加文件数据
 						piedataset.setValue(files[i].getName(),
 								files[i].length() / 1024l);
 					} else if (files[i].isDirectory()) {
-						// �����Ŀ¼����
+						// 不添加目录数据
 					}
 				}
-				// ����ͼ
+				// 画饼图
 				if (piedataset != null) {
 					chartPanel.removeAll();
 					chartPanel.setChart(makePieChart4FileSize(piedataset));
@@ -327,7 +327,7 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 		}
 	}
 
-	// ����OS���ļ�files����߼�����TheFile
+	// 根据OS的文件files获得逻辑对象TheFile
 	TheFile genObjTheFile(File f) {
 
 		TheFile oneFile = new TheFile();
@@ -380,7 +380,7 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 		Object nodeInfo = node.getUserObject();
 		Node oneNode = (Node) nodeInfo;
 		if (oneNode.IsDir()) {
-			// �����Ŀ¼����չ�������������ļ���Ŀ¼��Ϣ��ʾ�ڣ�
+			// 如果是目录，就展开，并将下面文件和目录信息显示在！
 			// DisplayContain4Dir(oneNode.getPath(), table);
 			if (node.getChildCount() <= 0) {
 				DisplayPathInTree(oneNode.getPath(), node);
@@ -389,22 +389,22 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 			GenData4Table(oneNode.getPath());
 
 		} else {
-			// ��Ȼ���߼��ϵ�Ŀ¼������ʽ�������¼���LEAF��
+			// 虽然是逻辑上的目录，但形式上是最下级的LEAF。
 			if (DEBUG) {
 				System.out.println("LEAF [" + oneNode.getPath()
-						+ "]: is clicked�����в����ܳ��֣����������߼��ļ��в����ܳ����ļ���");
+						+ "]: is clicked！这行不可能出现！左树都是逻辑文件夹不可能出现文件！");
 			}
-			// չ�������������ļ���Ŀ¼��Ϣ��ʾ�ڣ�
+			// 展开，并将下面文件和目录信息显示在！
 		}
 	}
 
 
 	private void appendRow(DefaultTableModel model, TheFile oneFile, int rowID) {
-		// model.addColumn("Col"+i); ��ͷ�������ط�Ū��
+		// model.addColumn("Col"+i); 列头在其他地方弄！
 
 		Vector<String> rowData = new Vector<String>(2);
 		rowData.add(rowID + 1 + "");
-		rowData.add(oneFile.isDir() ? "Ŀ¼" : "�ļ�");
+		rowData.add(oneFile.isDir() ? "目录" : "文件");
 		rowData.add(oneFile.getName());
 		rowData.add(oneFile.isCanRead() ? "Y" : "N");
 		rowData.add(oneFile.isCanWrite() ? "Y" : "N");
@@ -429,32 +429,31 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 
 	public void treeWillExpand(TreeExpansionEvent event)
 			throws ExpandVetoException {
-		// ��TREE�ڵ㣬��������˸ýڵ㴦��
+		// 打开TREE节点，当作点击了该节点处理！
 		TreePath path = event.getPath();
 		tree.setSelectionPath(path);
 	}
 
-	@Override
 	public void treeWillCollapse(TreeExpansionEvent event)
 			throws ExpandVetoException {
-		// �۵�tree�ڵ㲻����
+		// 折叠tree节点不处理
 
 	}
 
 	// public JFreeChart makePieChart() {
-	// String[] keys = { "�Ա���", "������", "���ͳ�Ʒ", "������", "eBay", "����" };
+	// String[] keys = { "淘宝网", "拍拍网", "凡客诚品", "当当网", "eBay", "其它" };
 	// double[] data = { 40.2, 14.1, 13.5, 15.8, 8.2, 9.8 };
 	// return createValidityComparePimChar(getPieDataSet(keys, data),
-	// "2010�й�����������վ�г��ݶ�ͳ�Ʊ���", "pieChart.png", keys);
+	// "2010中国电子商务网站市场份额统计报告", "pieChart.png", keys);
 	// }
 
 	public JFreeChart makePieChart4FileSize(PieDataset piedataset) {
-		return createValidityComparePimChar(piedataset, "��ǰĿ¼�ļ���С�ֲ���ͼ",
+		return createValidityComparePimChar(piedataset, "当前目录文件大小分布饼图",
 				"pieChart4FileSize.png", null);
 	}
 
 	/**
-	 * ��״ͼ ���ݼ�
+	 * 饼状图 数据集
 	 */
 	public PieDataset getPieDataSet(String[] keys, double[] data) {
 		if (keys != null && data != null) {
@@ -470,70 +469,70 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 	}
 
 	/**
-	 * ��״ͼ
+	 * 饼状图
 	 * 
 	 * @param dataset
-	 *            ���ݼ�
+	 *            数据集
 	 * @param chartTitle
-	 *            ͼ����
+	 *            图标题
 	 * @param charName
-	 *            ����ͼ������
+	 *            生成图的名字
 	 * @param pieKeys
-	 *            �ֱ������ּ�
+	 *            分饼的名字集
 	 * @return
 	 */
 	public JFreeChart createValidityComparePimChar(PieDataset dataset,
 			String chartTitle, String charName, String[] pieKeys) {
-		// ���ù�����������3D��ͼ
+		// 利用工厂类来创建3D饼图
 		JFreeChart chart = ChartFactory.createPieChart3D(chartTitle, dataset,
 				true, true, false);
 
-		// ʹ��˵����ǩ��������,ȥ���������
-		// chart.getRenderingHints().put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);��Ч��
+		// 使下说明标签字体清晰,去锯齿类似于
+		// chart.getRenderingHints().put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);的效果
 		chart.setTextAntiAlias(false);
-		// ͼƬ����ɫ
+		// 图片背景色
 		chart.setBackgroundPaint(Color.white);
-		// ����ͼ�����������������title(������Щ�汾Title���������)
-		chart.getTitle().setFont((new Font("����", Font.CENTER_BASELINE, 15)));
-		// ����ͼ��(Legend)�ϵ�����(//�ײ�������)
-		chart.getLegend().setItemFont(new Font("����", Font.CENTER_BASELINE, 12));
+		// 设置图标题的字体重新设置title(否组有些版本Title会出现乱码)
+		chart.getTitle().setFont((new Font("隶书", Font.CENTER_BASELINE, 15)));
+		// 设置图例(Legend)上的文字(//底部的字体)
+		chart.getLegend().setItemFont(new Font("隶书", Font.CENTER_BASELINE, 12));
 		PiePlot3D plot = (PiePlot3D) chart.getPlot();
-		// ͼƬ����ʾ�ٷֱ�:Ĭ�Ϸ�ʽ
-		// ָ����ͼ�����ߵ���ɫ
+		// 图片中显示百分比:默认方式
+		// 指定饼图轮廓线的颜色
 		plot.setBaseSectionOutlinePaint(Color.BLACK);
 		plot.setBaseSectionPaint(Color.BLACK);
-		// ����������ʱ����Ϣ
-		plot.setNoDataMessage("�޶�Ӧ�����ݣ������²�ѯ��");
-		// ����������ʱ����Ϣ��ʾ��ɫ
+		// 设置无数据时的信息
+		plot.setNoDataMessage("无对应的数据，请重新查询。");
+		// 设置无数据时的信息显示颜色
 		plot.setNoDataMessagePaint(Color.red);
-		// ͼƬ����ʾ�ٷֱ�:�Զ��巽ʽ��{0} ��ʾѡ� {1} ��ʾ��ֵ�� {2} ��ʾ��ռ���� ,С�������λ
+		// 图片中显示百分比:自定义方式，{0} 表示选项， {1} 表示数值， {2} 表示所占比例 ,小数点后两位
 		plot.setLabelGenerator(new StandardPieSectionLabelGenerator(
 				"{0}={1}({2})", NumberFormat.getNumberInstance(),
 				new DecimalFormat("0.00%")));
-		// ͼ����ʾ�ٷֱ�:�Զ��巽ʽ�� {0} ��ʾѡ� {1} ��ʾ��ֵ�� {2} ��ʾ��ռ����
+		// 图例显示百分比:自定义方式， {0} 表示选项， {1} 表示数值， {2} 表示所占比例
 		plot.setLegendLabelGenerator(new StandardPieSectionLabelGenerator(
 				"{0}({2})"));
-		plot.setLabelFont(new Font("����", Font.TRUETYPE_FONT, 10));
-		// ָ��ͼƬ��͸����(0.0-1.0)
+		plot.setLabelFont(new Font("隶书", Font.TRUETYPE_FONT, 10));
+		// 指定图片的透明度(0.0-1.0)
 		plot.setForegroundAlpha(0.65f);
-		// ָ����ʾ�ı�ͼ��Բ��(false)����Բ��(true)
+		// 指定显示的饼图上圆形(false)还椭圆形(true)
 		plot.setCircular(false, true);
-		// ���õ�һ�� ����section �Ŀ�ʼλ�ã�Ĭ����12���ӷ���
+		// 设置第一个 饼块section 的开始位置，默认是12点钟方向
 		plot.setStartAngle(90);
-		// ���÷ֱ���ɫ(�����������Լ�����)
+		// 设置分饼颜色(不设置它会自己设置)
 		// plot.setSectionPaint(pieKeys[0], new Color(244, 194, 144));
 		// plot.setSectionPaint(pieKeys[1], new Color(144, 233, 144));
 
-		// �ѱ�ͼ����ͼƬ
+		// 把饼图生成图片
 		FileOutputStream fos_jpg = null;
 		try {
-			// �ļ��в������򴴽�
+			// 文件夹不存在则创建
 			// isChartPathExist("C:\\temp\\");
 			// String chartName = "C:\\temp\\" + charName;
 			isChartPathExist(Tool.getUserDir());
 			String chartName = Tool.getUserDir() + charName;
 			fos_jpg = new FileOutputStream(chartName);
-			// �߿������Ӱ����Բ��ͼ����״
+			// 高宽的设置影响椭圆饼图的形状
 			ChartUtilities.writeChartAsPNG(fos_jpg, chart, 700, 400);
 
 			return chart;
@@ -551,7 +550,7 @@ public class DiskView2 implements TreeSelectionListener, TreeWillExpandListener 
 	}
 
 	/**
-	 * �ж��ļ����Ƿ���ڣ�������������½�
+	 * 判断文件夹是否存在，如果不存在则新建
 	 * 
 	 * @param chartPath
 	 */

@@ -79,12 +79,13 @@ public class DiskView implements TreeSelectionListener, TreeWillExpandListener {
 		// createNodes(root);
 		tree = new JTree(root);
 		tree.setShowsRootHandles(true);
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		tree.getSelectionModel().setSelectionMode(
+				TreeSelectionModel.SINGLE_TREE_SELECTION);
 
 		// Listen for when the selection changes.
 		tree.addTreeSelectionListener(this);
 
-		// �ڵ㱻չ��������ѡ��û�иı䡣.
+		// 节点被展开，但是选中没有改变。.
 		tree.addTreeWillExpandListener(this);
 
 		// // Set the icon for leaf nodes.
@@ -112,16 +113,17 @@ public class DiskView implements TreeSelectionListener, TreeWillExpandListener {
 		table.setBackground(Color.GRAY);
 		splitPane.setRightComponent(aScrollPaneRight);
 
-		// ��TREE��ʾĳ·����
+		// 用TREE显示某路径。
 		DisplayPathInTree("C://", false, root);
 	}
 
-	private void DisplayPathInTree(String path, boolean stopThisLevel, DefaultMutableTreeNode node) {
-		// JTREE���ؼ��ڵ��ͼ���Ǹ����Ƿ���children��ȷ���Ƿ���LEAF�ġ�
+	private void DisplayPathInTree(String path, boolean stopThisLevel,
+			DefaultMutableTreeNode node) {
+		// JTREE树控件节点的图标是根据是否有children来确定是否是LEAF的。
 
 		String fileSeperator = Tool.getOSFileSeparator();
 
-		// pathΪ��������ΪĬ�ϡ�C://��
+		// path为空则设置为默认“C://”
 		if (path.length() == 0) {
 			path = "C://";
 		}
@@ -129,29 +131,32 @@ public class DiskView implements TreeSelectionListener, TreeWillExpandListener {
 		DefaultMutableTreeNode tempTreeNode = null;
 		Node tempNode = null;
 
-		// ��ʼ������Ŀ¼��ʾ��TREE�У��������һ��Ľڵ㣨�ܼ�2�㣬������֧��Ҷ�ӵȴ�����ٴ���
+		// 初始化将根目录显示在TREE中，并添加下一层的节点（总计2层，其他分支和叶子等待点击再处理）
 		File file = new File(path);
 		if (file.exists()) {
 			// If having file OR dir under path, then produce them
 			// Otherwise, return
 			try {
 				File files[] = file.listFiles();
-				// û���ӽڵ���ļ��������Ŀ¼����Ҫ���<��>�����ӽڵ㣡
+				// 没有子节点的文件，如果是目录还是要添加<空>虚拟子节点！
 				if (file.isDirectory() && files.length == 0) {
-					node.add(new DefaultMutableTreeNode(new Node("<��>", file.getAbsolutePath())));
+					node.add(new DefaultMutableTreeNode(new Node("<空>", file
+							.getAbsolutePath())));
 					return;
 				}
 				for (int i = 0; i < files.length; i++) {
 					// for (int i = files.length-1; i >=0; i--) {
 					if (files[i].isFile()) {
 						// display leaf/file node
-						tempNode = new Node(files[i].getName(), files[i].getAbsolutePath(), false);
+						tempNode = new Node(files[i].getName(),
+								files[i].getAbsolutePath(), false);
 						tempTreeNode = new DefaultMutableTreeNode(tempNode);
 						node.add(tempTreeNode);
 						System.out.println("add LEAF[" + tempTreeNode + "]");
 					} else if (files[i].isDirectory()) {
 						// display branch/dir node
-						tempNode = new Node(files[i].getName(), files[i].getAbsolutePath(), true);
+						tempNode = new Node(files[i].getName(),
+								files[i].getAbsolutePath(), true);
 						tempTreeNode = new DefaultMutableTreeNode(tempNode);
 						node.add(tempTreeNode);
 						System.out.println("add DIR[" + tempTreeNode + "]");
@@ -161,16 +166,19 @@ public class DiskView implements TreeSelectionListener, TreeWillExpandListener {
 							// Otherwise,leave branch/dir alone, don't produce
 							// them further!
 							try {
-								DisplayPathInTree(path + fileSeperator + files[i].getName(), true, tempTreeNode);
+								DisplayPathInTree(path + fileSeperator
+										+ files[i].getName(), true,
+										tempTreeNode);
 							} catch (Exception e) {
-								// ��������"System Volume
-								// Information"��Ŀ¼�޷�����ģ�����exception��
+								// 遇到比如"System Volume Information"等目录无法进入的，忽略exception。
 								// e.printStackTrace();
 								return;
 							}
 						} else {
-							// ֻԤ��2�㣬���ͣ����㣬���������DIR�����TAG='DUMMY'��LEAF�ڵ�
-							tempTreeNode.add(new DefaultMutableTreeNode(new Node("DUMMY", files[i].getAbsolutePath())));
+							// 只预读2层，如果停在这层，而这个又是DIR，添加TAG='DUMMY'的LEAF节点
+							tempTreeNode.add(new DefaultMutableTreeNode(
+									new Node("DUMMY", files[i]
+											.getAbsolutePath())));
 
 						}
 					}
@@ -208,7 +216,8 @@ public class DiskView implements TreeSelectionListener, TreeWillExpandListener {
 
 	/** Required by TreeSelectionListener interface. */
 	public void valueChanged(TreeSelectionEvent e) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree
+				.getLastSelectedPathComponent();
 
 		if (node == null)
 			return;
@@ -216,45 +225,50 @@ public class DiskView implements TreeSelectionListener, TreeWillExpandListener {
 		Object nodeInfo = node.getUserObject();
 		Node oneNode = (Node) nodeInfo;
 		if (!node.isLeaf()) {
-			// �����Ŀ¼����չ����
+			// 如果是目录，就展开！
 
-			// ��������һ��DUMMYҶ�ӵ�DIRΪû�б�Ԥ��������������Ķ�������ˣ����Ե���
-			DefaultMutableTreeNode lastChild = (DefaultMutableTreeNode) node.getLastChild();
+			// 仅当含有一个DUMMY叶子的DIR为没有被预读处理过，其他的都处理过了，忽略掉！
+			DefaultMutableTreeNode lastChild = (DefaultMutableTreeNode) node
+					.getLastChild();
 			if ("DUMMY" == ((Node) lastChild.getUserObject()).getTag()) {
-				// ������DUMMY��DIR��˵����Ҫ��һ����չ������˵���Ѿ�������ˣ�
+				// 当含有DUMMY的DIR，说明需要进一步扩展，否则说明已经处理过了！
 				node.removeAllChildren(); // remove DUMMY first!
 
-				tree.updateUI();// ������ԭ����ͼ���TREE��չ�����������¼�������޷�ˢ�£�
+				tree.updateUI();// 不更新原来的图标和TREE的展开情况将被记录，导致无法刷新！
 
 				if (DEBUG) {
-					System.out.println("DIR [" + oneNode.getPath() + "]: is clicked չ���²㣬Ԥ�����²㣡");
+					System.out.println("DIR [" + oneNode.getPath()
+							+ "]: is clicked 展开下层，预读下下层！");
 				}
 
 				DisplayPathInTree(oneNode.getPath(), false, node);
 			} else {
 				if (DEBUG) {
-					System.out.println("DIR [" + oneNode.getPath() + "]: is clicked�������Ѿ�����������ټ�������");
+					System.out.println("DIR [" + oneNode.getPath()
+							+ "]: is clicked，但是已经处理过！不再继续处理！");
 				}
 
 			}
 
 		} else {
-			// �����leaf��������
+			// 如果是leaf，不处理。
 			if (DEBUG) {
-				System.out.println("LEAF [" + oneNode.getPath() + "]: is clicked��");
+				System.out.println("LEAF [" + oneNode.getPath()
+						+ "]: is clicked！");
 			}
 		}
 	}
 
-	public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
-		// ��TREE�ڵ㣬��������˸ýڵ㴦��
+	public void treeWillExpand(TreeExpansionEvent event)
+			throws ExpandVetoException {
+		// 打开TREE节点，当作点击了该节点处理！
 		TreePath path = event.getPath();
 		tree.setSelectionPath(path);
 	}
 
-	@Override
-	public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
-		// �۵�tree�ڵ㲻����
+	public void treeWillCollapse(TreeExpansionEvent event)
+			throws ExpandVetoException {
+		// 折叠tree节点不处理
 
 	}
 

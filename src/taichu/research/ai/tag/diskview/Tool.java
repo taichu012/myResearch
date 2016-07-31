@@ -20,8 +20,9 @@ public final class Tool {
 		}
 	}
 
-	// ����֤������ã���������ʾ����﷨������ʹ��
-	public boolean getFileList(Vector<String> outFileLists, String filePath, boolean subFolderFlag) {
+	// 不保证功能完好，仅用来显示相关语法和语句的使用
+	public boolean getFileList(Vector<String> outFileLists, String filePath,
+			boolean subFolderFlag) {
 		if (outFileLists == null) {
 			outFileLists = new Vector<String>();
 		}
@@ -35,9 +36,12 @@ public final class Tool {
 						outFileLists.add(files[i].getName());
 						System.out.println(files[i].getName());
 					} else if (files[i].isDirectory()) {
-						outFileLists.add("Ŀ¼ [" + files[i].getName() + "]-----");
-						System.out.println("Ŀ¼ [" + files[i].getName() + "]-----");
-						getFileList(outFileLists, filePath + fileSeperator + files[i].getName(), subFolderFlag);
+						outFileLists
+								.add("目录 [" + files[i].getName() + "]-----");
+						System.out.println("目录 [" + files[i].getName()
+								+ "]-----");
+						getFileList(outFileLists, filePath + fileSeperator
+								+ files[i].getName(), subFolderFlag);
 					}
 				}
 			} else {
@@ -53,7 +57,7 @@ public final class Tool {
 		return true;
 	}
 
-	// ����֤������ã���������ʾ����﷨������ʹ��
+	// 不保证功能完好，仅用来显示相关语法和语句的使用
 	public void printFolder(String rootPath) {
 		Vector<String> files = new Vector<String>();
 		// getFileList(files, "C://", true);
@@ -64,16 +68,16 @@ public final class Tool {
 	}
 
 	public static String getOSFileSeparator() {
-		Properties props = System.getProperties(); // ���ϵͳ���Լ�
-		return props.getProperty("file.separator"); // ��ȡOS��Ŀ¼�۷ָ���
+		Properties props = System.getProperties(); // 获得系统属性集
+		return props.getProperty("file.separator"); // 获取OS的目录价分隔符
 	}
 
 	public void showOSInfo() {
-		Properties props = System.getProperties(); // ���ϵͳ���Լ�
-		String osName = props.getProperty("os.name"); // ����ϵͳ����
-		String osArch = props.getProperty("os.arch"); // ����ϵͳ����
-		String osVersion = props.getProperty("os.version"); // ����ϵͳ�汾
-		String fileSeparator = props.getProperty("file.separator"); // ��ȡOS��Ŀ¼�۷ָ���
+		Properties props = System.getProperties(); // 获得系统属性集
+		String osName = props.getProperty("os.name"); // 操作系统名称
+		String osArch = props.getProperty("os.arch"); // 操作系统构架
+		String osVersion = props.getProperty("os.version"); // 操作系统版本
+		String fileSeparator = props.getProperty("file.separator"); // 获取OS的目录价分隔符
 
 		System.out.println("os.name=" + osName);
 		System.out.println("os.arch=" + osArch);
@@ -81,35 +85,35 @@ public final class Tool {
 		System.out.println("file.separator" + fileSeparator);
 
 		// /*public static String getProperty(String key)
-		// �� ���ֵ������
-		// java.version Java ����ʱ�����汾
-		// java.vendor Java ����ʱ������Ӧ��
-		// java.vendor.url Java ��Ӧ�̵� URL
-		// java.home Java ��װĿ¼
-		// java.vm.specification.version Java ������淶�汾
-		// java.vm.specification.vendor Java ������淶��Ӧ��
-		// java.vm.specification.name Java ������淶����
-		// java.vm.version Java �����ʵ�ְ汾
-		// java.vm.vendor Java �����ʵ�ֹ�Ӧ��
-		// java.vm.name Java �����ʵ������
-		// java.specification.version Java ����ʱ�����淶�汾
-		// java.specification.vendor Java ����ʱ�����淶��Ӧ��
-		// java.specification.name Java ����ʱ�����淶����
-		// java.class.version Java ���ʽ�汾��
-		// java.class.path Java ��·��
-		// java.library.path ���ؿ�ʱ������·���б�
-		// java.io.tmpdir Ĭ�ϵ���ʱ�ļ�·��
-		// java.compiler Ҫʹ�õ� JIT ������������
-		// java.ext.dirs һ��������չĿ¼��·��
-		// os.name ����ϵͳ������
-		// os.arch ����ϵͳ�ļܹ�
-		// os.version ����ϵͳ�İ汾
-		// file.separator �ļ��ָ������� UNIX ϵͳ���ǡ�/����
-		// path.separator ·���ָ������� UNIX ϵͳ���ǡ�:����
-		// line.separator �зָ������� UNIX ϵͳ���ǡ�/n����
-		// user.name �û����˻�����
-		// user.home �û�����Ŀ¼
-		// user.dir �û��ĵ�ǰ����Ŀ¼ */
+		// 键 相关值的描述
+		// java.version Java 运行时环境版本
+		// java.vendor Java 运行时环境供应商
+		// java.vendor.url Java 供应商的 URL
+		// java.home Java 安装目录
+		// java.vm.specification.version Java 虚拟机规范版本
+		// java.vm.specification.vendor Java 虚拟机规范供应商
+		// java.vm.specification.name Java 虚拟机规范名称
+		// java.vm.version Java 虚拟机实现版本
+		// java.vm.vendor Java 虚拟机实现供应商
+		// java.vm.name Java 虚拟机实现名称
+		// java.specification.version Java 运行时环境规范版本
+		// java.specification.vendor Java 运行时环境规范供应商
+		// java.specification.name Java 运行时环境规范名称
+		// java.class.version Java 类格式版本号
+		// java.class.path Java 类路径
+		// java.library.path 加载库时搜索的路径列表
+		// java.io.tmpdir 默认的临时文件路径
+		// java.compiler 要使用的 JIT 编译器的名称
+		// java.ext.dirs 一个或多个扩展目录的路径
+		// os.name 操作系统的名称
+		// os.arch 操作系统的架构
+		// os.version 操作系统的版本
+		// file.separator 文件分隔符（在 UNIX 系统中是“/”）
+		// path.separator 路径分隔符（在 UNIX 系统中是“:”）
+		// line.separator 行分隔符（在 UNIX 系统中是“/n”）
+		// user.name 用户的账户名称
+		// user.home 用户的主目录
+		// user.dir 用户的当前工作目录 */
 	}
 
 }

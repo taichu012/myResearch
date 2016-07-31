@@ -19,7 +19,7 @@ public class HelloWorld {
         void printf(String format, Object... args);
     }
     
-  //Kernel32 �ӿڣ�The Kernel32 interface��
+  //Kernel32 接口（The Kernel32 interface）
 
     public static void main(String[] args) {
         CLibrary.INSTANCE.printf("Hello, World\n");
@@ -45,7 +45,7 @@ public class HelloWorld {
     
 //    private void PrintFileDate(String pathFilename)   
 //    {   
-//    	//���ļ�������ȡ�����ļ���ʱ��
+//    	//打开文件，并获取创建文件的时间
 //        HANDLE hFile;   
 //        FILETIME creationTime;   
 //        FILETIME lastAccessTime;   

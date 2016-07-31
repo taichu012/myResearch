@@ -38,6 +38,7 @@ REQ0020:实现基本的SMP协议，用netty收发smp消息达到约15KCAPS/10MBS
 		发现即使发送正确，netty会有一定概率发送空包（上层逻辑接收到未主动发送的空字符串）的情况，百万分支1.5以下；逻辑应该要考虑屏蔽；
 		不做处理会发生未知错误，较难排查；
 REQ0021:将子项目VPRC单独用自己的release note开发和跟踪，从主research项目中独立；
+REQ0022：为eclipse增加了Pydev插件（需要eclipse4.5+至少Mars，及JDK8+）；并将srapytest爬虫程序托管到2个远端git上；
 
 
 
