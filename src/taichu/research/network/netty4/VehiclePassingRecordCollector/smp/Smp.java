@@ -5,6 +5,7 @@ import taichu.research.tool.T;
 
 public class Smp implements ISmp{
 
+	/*
 	public static boolean isHeartBeat(String msg) {
     	if (Smp.HEARTBEAT_HB.equals(msg)||
     			Smp.HEARTBEAT_PING.equals(msg)||
@@ -37,5 +38,6 @@ public class Smp implements ISmp{
 	public static String gen8BytesMd5(String data) throws Exception {
 		return T.Security.genMd5WithBytes8(data);
 	}
+	*/
 
 }
