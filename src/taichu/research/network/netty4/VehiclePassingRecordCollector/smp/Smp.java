@@ -29,5 +29,13 @@ public class Smp implements ISmp{
 	public static String genLineFromMsg(VehiclePassingRecord msg){
 		return T.Reflect.genTwoCsvLineFromBeanAttributesAndValues(msg);
 	}
+	
+	public static String gen32BytesMd5(String data) throws Exception {
+		return T.Security.genMd5WithBytes32(data);
+	}
+	
+	public static String gen8BytesMd5(String data) throws Exception {
+		return T.Security.genMd5WithBytes8(data);
+	}
 
 }
