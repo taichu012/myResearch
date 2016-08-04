@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import taichu.research.network.netty4.VehiclePassingRecordCollector.entity.VehiclePassingRecord;
-import taichu.research.network.netty4.VehiclePassingRecordCollector.vpr.VehiclePassingRecordSenderHandler;
 
 /**
  * @author taichu
@@ -289,6 +288,16 @@ public class T {
 			java.text.DecimalFormat fmt = new DecimalFormat("#.#########s");// 输出格式化
 			System.out.println(fmt.format(result));
 		}
+		
+		/**
+		 * 
+		 * @param beginNs - 开始nanotime
+		 * @param endNs - 结束nanotime
+		 * @return 时间间隔毫秒
+		 */
+		public static long getMsTnterval(long beginNs,long endNs){
+			return (endNs-beginNs)/1000/1000;
+		}
 	}
 
 	public static class File {
@@ -451,7 +460,7 @@ public class T {
 					buf.append(Integer.toHexString(a));
 				}
 			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
+				log.error("NoSuchAlgorithmException！无此算法.");
 				e.printStackTrace();
 				return null;
 			}
@@ -473,19 +482,25 @@ public class T {
 		/*
 		 * 超过10万
 		 */
-		public static String genMd5WithBytes32(String SourceString) throws Exception {
-			MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-			digest.update(SourceString.getBytes());
+		public static String genMd5WithBytes32(String data) {
+			MessageDigest digest=null;
+			try {
+				digest = java.security.MessageDigest.getInstance("MD5");
+			} catch (NoSuchAlgorithmException e) {
+				log.error("NoSuchAlgorithmException！无此算法.");
+				e.printStackTrace();
+			}
+			digest.update(data.getBytes());
 			byte messageDigest[] = digest.digest();
 			return toHexString(messageDigest);
 		}
 
-		public static String genMd5WithBytes16(String SourceString) throws Exception {
-			return genMd5WithBytes32(SourceString).substring(8, 24);
+		public static String genMd5WithBytes16(String data) {
+			return genMd5WithBytes32(data).substring(8, 24);
 		}
 
-		public static String genMd5WithBytes8(String SourceString) throws Exception {
-			return genMd5WithBytes32(SourceString).substring(12, 20);
+		public static String genMd5WithBytes8(String data) {
+			return genMd5WithBytes32(data).substring(12, 20);
 		}
 
 		/*
@@ -542,7 +557,7 @@ public class T {
 	}
 
 	public static class Json {
-		// 这里放入JackyJson或其他较快的json库的函数；
+		// TODO:这里放入JackyJson或其他较快的json库的函数；
 
 	}
 
