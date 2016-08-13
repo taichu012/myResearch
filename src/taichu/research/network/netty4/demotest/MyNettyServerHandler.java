@@ -52,7 +52,7 @@ public class MyNettyServerHandler extends ChannelInboundHandlerAdapter {
     private String getResponse(){
     	long currTimeMs=System.currentTimeMillis();
     	return "Server.sendtime.ms=["+currTimeMs
-    	+"]=["+T.getDateTimeNow(currTimeMs)+"]"
+    	+"]=["+T.Time.getDateTimeNow(currTimeMs)+"]"
     	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>."+Delimiters.getLineDelimiterStrForWin();
     }
 

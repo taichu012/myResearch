@@ -52,7 +52,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             goodReceivedCount++;
             
             String res = "HttpServer返回客户端消息【"+msgstr+"】，server时间"
-            		+T.getDateTimeNow();
+            		+T.Time.getDateTimeNow();
             FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1,
                     OK, Unpooled.wrappedBuffer(res.getBytes("UTF-8")));
             response.headers().set(CONTENT_TYPE, "text/plain");

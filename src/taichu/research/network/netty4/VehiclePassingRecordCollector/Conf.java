@@ -11,7 +11,7 @@ public class Conf {
 	public static String getIniPath() {return INIFILE;}
 	
 	private static String getIniPathBasedOnClassPath() {
-		String str = T.OSSys.getRealPath(Conf.class);
+		String str = T.OS.getRealPath(Conf.class);
 		return str.replace('\\', '/') + INIFILE_TAIL;
 	}
 	

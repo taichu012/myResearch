@@ -34,65 +34,13 @@ public class T {
 	private static Logger log = Logger.getLogger(T.class);
 
 	// NOTICE:
-	// T是总的帮助类，内部子静态类是分门别类的方便使用的，比如反射Reflect类，File，OSSys，Time等；
+	// T是总的帮助类，内部子静态类是分门别类的方便使用的，比如反射Reflect类，File，OS，Time等；
 	// 需要子类细分的请建立新的静态类（public static class）
-
-	/**
-	 * 
-	 */
-	// public T() {}
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO：maybe need more test case in future
-	}
-
-	public static String GetPID() {
-		String name = ManagementFactory.getRuntimeMXBean().getName();
-		// System.out.println(name);
-		// get pid from pid@domain
-		return name.split("@")[0];
-	}
-
-	public static String GetPIDWithDomain() {
-		String name = ManagementFactory.getRuntimeMXBean().getName();
-		// System.out.println(name);
-		// get pid@DOMAIN
-		return name;
-	}
-
-	@SuppressWarnings("static-access")
-	public static String GetThreadName(Thread t) {
-		return t.currentThread().getName();
-	}
-
-	// long currentTime = System.currentTimeMillis();
-
-	public static String getDateTimeNow() {
-		return getDateTimeNow(System.currentTimeMillis());
-	}
-
-	public static String getDateTimeNow(long ms) {
-
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy年-MM月dd日-HH时mm分ss秒");
-		Date date = new Date(ms);
-		return (formatter.format(date));
-	}
-
-	// byte 数组与 long 的相互转换
-	public static byte[] longToBytes(long x) {
-		ByteBuffer buffer = ByteBuffer.allocate(8);
-		buffer.putLong(0, x);
-		return buffer.array();
-	}
-
-	public static long bytesToLong(byte[] bytes) {
-		ByteBuffer buffer = ByteBuffer.allocate(8);
-		buffer.put(bytes, 0, bytes.length);
-		buffer.flip();// need flip
-		return buffer.getLong();
 	}
 
 	public static class Reflect {
@@ -298,6 +246,19 @@ public class T {
 		public static long getMsTnterval(long beginNs,long endNs){
 			return (endNs-beginNs)/1000/1000;
 		}
+
+		// long currentTime = System.currentTimeMillis();
+		
+		public static String getDateTimeNow() {
+			return getDateTimeNow(System.currentTimeMillis());
+		}
+
+		public static String getDateTimeNow(long ms) {
+		
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy年-MM月dd日-HH时mm分ss秒");
+			Date date = new Date(ms);
+			return (formatter.format(date));
+		}
 	}
 
 	public static class File {
@@ -359,9 +320,9 @@ public class T {
 		}
 	}
 
-	public static class OSSys {
+	public static class OS {
 
-		public static void printOsSysProperties() {
+		public static void printOsProperties() {
 			// 具体属性含义见：http://marsvaadin.iteye.com/blog/1671046
 			System.out.println("java_vendor:" + System.getProperty("java.vendor"));
 			System.out.println("java_vendor_url:" + System.getProperty("java.vendor.url"));
@@ -437,7 +398,7 @@ public class T {
 		public static void main(String[] args) {
 			System.out.println(getRealPath(T.class));
 			System.out.println(getAppPath(T.class));
-			printOsSysProperties();
+			printOsProperties();
 
 		}
 	}
@@ -556,8 +517,325 @@ public class T {
 
 	}
 
-	public static class Json {
-		// TODO:这里放入JackyJson或其他较快的json库的函数；
+	public static class Crc8 {
+
+		/**
+		 * CRC8相关计算 encode: utf-8
+		 */
+		public static class CRC8_A {
+			static byte[] crc8_tab = { (byte) 0, (byte) 94, (byte) 188, (byte) 226, (byte) 97, (byte) 63, (byte) 221,
+					(byte) 131, (byte) 194, (byte) 156, (byte) 126, (byte) 32, (byte) 163, (byte) 253, (byte) 31,
+					(byte) 65, (byte) 157, (byte) 195, (byte) 33, (byte) 127, (byte) 252, (byte) 162, (byte) 64,
+					(byte) 30, (byte) 95, (byte) 1, (byte) 227, (byte) 189, (byte) 62, (byte) 96, (byte) 130,
+					(byte) 220, (byte) 35, (byte) 125, (byte) 159, (byte) 193, (byte) 66, (byte) 28, (byte) 254,
+					(byte) 160, (byte) 225, (byte) 191, (byte) 93, (byte) 3, (byte) 128, (byte) 222, (byte) 60,
+					(byte) 98, (byte) 190, (byte) 224, (byte) 2, (byte) 92, (byte) 223, (byte) 129, (byte) 99,
+					(byte) 61, (byte) 124, (byte) 34, (byte) 192, (byte) 158, (byte) 29, (byte) 67, (byte) 161,
+					(byte) 255, (byte) 70, (byte) 24, (byte) 250, (byte) 164, (byte) 39, (byte) 121, (byte) 155,
+					(byte) 197, (byte) 132, (byte) 218, (byte) 56, (byte) 102, (byte) 229, (byte) 187, (byte) 89,
+					(byte) 7, (byte) 219, (byte) 133, (byte) 103, (byte) 57, (byte) 186, (byte) 228, (byte) 6,
+					(byte) 88, (byte) 25, (byte) 71, (byte) 165, (byte) 251, (byte) 120, (byte) 38, (byte) 196,
+					(byte) 154, (byte) 101, (byte) 59, (byte) 217, (byte) 135, (byte) 4, (byte) 90, (byte) 184,
+					(byte) 230, (byte) 167, (byte) 249, (byte) 27, (byte) 69, (byte) 198, (byte) 152, (byte) 122,
+					(byte) 36, (byte) 248, (byte) 166, (byte) 68, (byte) 26, (byte) 153, (byte) 199, (byte) 37,
+					(byte) 123, (byte) 58, (byte) 100, (byte) 134, (byte) 216, (byte) 91, (byte) 5, (byte) 231,
+					(byte) 185, (byte) 140, (byte) 210, (byte) 48, (byte) 110, (byte) 237, (byte) 179, (byte) 81,
+					(byte) 15, (byte) 78, (byte) 16, (byte) 242, (byte) 172, (byte) 47, (byte) 113, (byte) 147,
+					(byte) 205, (byte) 17, (byte) 79, (byte) 173, (byte) 243, (byte) 112, (byte) 46, (byte) 204,
+					(byte) 146, (byte) 211, (byte) 141, (byte) 111, (byte) 49, (byte) 178, (byte) 236, (byte) 14,
+					(byte) 80, (byte) 175, (byte) 241, (byte) 19, (byte) 77, (byte) 206, (byte) 144, (byte) 114,
+					(byte) 44, (byte) 109, (byte) 51, (byte) 209, (byte) 143, (byte) 12, (byte) 82, (byte) 176,
+					(byte) 238, (byte) 50, (byte) 108, (byte) 142, (byte) 208, (byte) 83, (byte) 13, (byte) 239,
+					(byte) 177, (byte) 240, (byte) 174, (byte) 76, (byte) 18, (byte) 145, (byte) 207, (byte) 45,
+					(byte) 115, (byte) 202, (byte) 148, (byte) 118, (byte) 40, (byte) 171, (byte) 245, (byte) 23,
+					(byte) 73, (byte) 8, (byte) 86, (byte) 180, (byte) 234, (byte) 105, (byte) 55, (byte) 213,
+					(byte) 139, (byte) 87, (byte) 9, (byte) 235, (byte) 181, (byte) 54, (byte) 104, (byte) 138,
+					(byte) 212, (byte) 149, (byte) 203, (byte) 41, (byte) 119, (byte) 244, (byte) 170, (byte) 72,
+					(byte) 22, (byte) 233, (byte) 183, (byte) 85, (byte) 11, (byte) 136, (byte) 214, (byte) 52,
+					(byte) 106, (byte) 43, (byte) 117, (byte) 151, (byte) 201, (byte) 74, (byte) 20, (byte) 246,
+					(byte) 168, (byte) 116, (byte) 42, (byte) 200, (byte) 150, (byte) 21, (byte) 75, (byte) 169,
+					(byte) 247, (byte) 182, (byte) 232, (byte) 10, (byte) 84, (byte) 215, (byte) 137, (byte) 107, 53 };
+
+			/**
+			 * 计算数组的CRC8校验值
+			 * 
+			 * @param data
+			 *            需要计算的数组
+			 * @return CRC8校验值
+			 */
+			public static byte genCrc8(byte[] data) {
+				return genCrc8(data, 0, data.length, (byte) 0);
+			}
+
+			/**
+			 * 计算CRC8校验值
+			 * 
+			 * @param data
+			 *            数据
+			 * @param offset
+			 *            起始位置
+			 * @param len
+			 *            长度
+			 * @return 校验值
+			 */
+			public static byte genCrc8(byte[] data, int offset, int len) {
+				return genCrc8(data, offset, len, (byte) 0);
+			}
+
+			/**
+			 * 计算CRC8校验值
+			 * 
+			 * @param data
+			 *            数据
+			 * @param offset
+			 *            起始位置
+			 * @param len
+			 *            长度
+			 * @param preval
+			 *            之前的校验值
+			 * @return 校验值
+			 */
+			private static byte genCrc8(byte[] data, int offset, int len, byte preval) {
+				byte ret = preval;
+				for (int i = offset; i < (offset + len); ++i) {
+					ret = crc8_tab[(0x00ff & (ret ^ data[i]))];
+				}
+				return ret;
+			}
+
+			// 测试
+			public static void main(String[] args) {
+				byte crc = CRC8_A.genCrc8(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+				System.out.println("" + Integer.toHexString(0x00ff & crc));
+				assert (Integer.toHexString(0x00ff & crc).equalsIgnoreCase("b6"));
+			}
+		}
+
+		/*---------------------------------------------------------------------------
+		* Copyright (C) 1999,2000 Dallas Semiconductor Corporation, All Rights Reserved.
+		*
+		* Permission is hereby granted, free of charge, to any person obtaining a
+		* copy of this software and associated documentation files (the "Software"),
+		* to deal in the Software without restriction, including without limitation
+		* the rights to use, copy, modify, merge, publish, distribute, sublicense,
+		* and/or sell copies of the Software, and to permit persons to whom the
+		* Software is furnished to do so, subject to the following conditions:
+		*
+		* The above copyright notice and this permission notice shall be included
+		* in all copies or substantial portions of the Software.
+		*
+		* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+		* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+		* MERCHANTABILITY,  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+		* IN NO EVENT SHALL DALLAS SEMICONDUCTOR BE LIABLE FOR ANY CLAIM, DAMAGES
+		* OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+		* ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+		* OTHER DEALINGS IN THE SOFTWARE.
+		*
+		* Except as contained in this notice, the name of Dallas Semiconductor
+		* shall not be used except as stated in the Dallas Semiconductor
+		* Branding Policy.
+		*---------------------------------------------------------------------------
+		*/
+
+		/**
+		 * CRC8 is a class to contain an implementation of the
+		 * Cyclic-Redundency-Check CRC8 for the iButton. The CRC8 is used in the
+		 * 1-Wire Network address of all iButtons and 1-Wire devices.
+		 * <p>
+		 * CRC8 is based on the polynomial = X^8 + X^5 + X^4 + 1.
+		 *
+		 * @version 0.00, 28 Aug 2000
+		 * @author DS
+		 *
+		 */
+		public static class CRC8_B {
+			/**
+			 * CRC 8 lookup table
+			 */
+			private static byte dscrc_table[];
+
+			/*
+			 * Create the lookup table
+			 */
+			static {
+				// Translated from the assembly code in iButton Standards, page
+				// 129.
+				dscrc_table = new byte[256];
+				int acc;
+				int crc;
+				for (int i = 0; i < 256; i++) {
+					acc = i;
+					crc = 0;
+
+					for (int j = 0; j < 8; j++) {
+						if (((acc ^ crc) & 0x01) == 0x01) {
+							crc = ((crc ^ 0x18) >> 1) | 0x80;
+						} else
+							crc = crc >> 1;
+						acc = acc >> 1;
+					}
+					dscrc_table[i] = (byte) crc;
+				}
+			}
+
+			/**
+			 * Private constructor to prevent instantiation.
+			 */
+			private CRC8_B() {
+			}
+
+			/**
+			 * Perform the CRC8 on the data element based on the provided seed.
+			 * <p>
+			 * CRC8 is based on the polynomial = X^8 + X^5 + X^4 + 1.
+			 *
+			 * @param dataToCrc
+			 *            data element on which to perform the CRC8
+			 * @param seed
+			 *            seed the CRC8 with this value
+			 * @return CRC8 value
+			 */
+			public static int genCrc8(int dataToCRC, int seed) {
+				return (dscrc_table[(seed ^ dataToCRC) & 0x0FF] & 0x0FF);
+			}
+
+			/**
+			 * Perform the CRC8 on the data element based on a zero seed.
+			 * <p>
+			 * CRC8 is based on the polynomial = X^8 + X^5 + X^4 + 1.
+			 *
+			 * @param dataToCrc
+			 *            data element on which to perform the CRC8
+			 * @return CRC8 value
+			 */
+			public static int genCrc8(int dataToCRC) {
+				return (dscrc_table[dataToCRC & 0x0FF] & 0x0FF);
+			}
+
+			/**
+			 * Perform the CRC8 on an array of data elements based on a zero
+			 * seed.
+			 * <p>
+			 * CRC8 is based on the polynomial = X^8 + X^5 + X^4 + 1.
+			 *
+			 * @param dataToCrc
+			 *            array of data elements on which to perform the CRC8
+			 * @return CRC8 value
+			 */
+			public static int genCrc8(byte dataToCrc[]) {
+				return genCrc8(dataToCrc, 0, dataToCrc.length);
+			}
+
+			/**
+			 * Perform the CRC8 on an array of data elements based on a zero
+			 * seed.
+			 * <p>
+			 * CRC8 is based on the polynomial = X^8 + X^5 + X^4 + 1.
+			 *
+			 * @param dataToCrc
+			 *            array of data elements on which to perform the CRC8
+			 * @param off
+			 *            offset into array
+			 * @param len
+			 *            length of data to crc
+			 * @return CRC8 value
+			 */
+			public static int genCrc8(byte dataToCrc[], int off, int len) {
+				return genCrc8(dataToCrc, off, len, 0);
+			}
+
+			/**
+			 * Perform the CRC8 on an array of data elements based on the
+			 * provided seed.
+			 * <p>
+			 * CRC8 is based on the polynomial = X^8 + X^5 + X^4 + 1.
+			 *
+			 * @param dataToCrc
+			 *            array of data elements on which to perform the CRC8
+			 * @param off
+			 *            offset into array
+			 * @param len
+			 *            length of data to crc
+			 * @param seed
+			 *            seed to use for CRC8
+			 * @return CRC8 value
+			 */
+			private static int genCrc8(byte dataToCrc[], int off, int len, int seed) {
+
+				// loop to do the crc on each data element
+				int CRC8 = seed;
+
+				for (int i = 0; i < len; i++)
+					CRC8 = dscrc_table[(CRC8 ^ dataToCrc[i + off]) & 0x0FF];
+
+				return (CRC8 & 0x0FF);
+			}
+
+			/**
+			 * Perform the CRC8 on an array of data elements based on the
+			 * provided seed.
+			 * <p>
+			 * CRC8 is based on the polynomial = X^8 + X^5 + X^4 + 1.
+			 *
+			 * @param dataToCrc
+			 *            array of data elements on which to perform the CRC8
+			 * @param seed
+			 *            seed to use for CRC8
+			 * @return CRC8 value
+			 */
+			public static int genCrc8(byte dataToCrc[], int seed) {
+				return genCrc8(dataToCrc, 0, dataToCrc.length, seed);
+			}
+
+			// 测试
+			public static void main(String[] args) {
+				int crc = CRC8_B.genCrc8(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+				// System.out.println("" + Integer.toHexString(0x00ff & crc));
+				System.out.println("" + Integer.toHexString(0x00ff & crc));
+				assert (Integer.toHexString(0x00ff & crc).equalsIgnoreCase("b6"));
+			}
+
+		}
+	}
+	
+	public static class Thread {
+
+		public static String GetPID() {
+			String name = ManagementFactory.getRuntimeMXBean().getName();
+			// System.out.println(name);
+			// get pid from pid@domain
+			return name.split("@")[0];
+		}
+
+		public static String GetPIDWithDomain() {
+			String name = ManagementFactory.getRuntimeMXBean().getName();
+			// System.out.println(name);
+			// get pid@DOMAIN
+			return name;
+		}
+
+		@SuppressWarnings("static-access")
+		public static String GetThreadName(java.lang.Thread t) {
+			return t.currentThread().getName();
+		}
+	}
+
+	public static class Type {
+
+		public static long bytesToLong(byte[] bytes) {
+			ByteBuffer buffer = ByteBuffer.allocate(8);
+			buffer.put(bytes, 0, bytes.length);
+			buffer.flip();// need flip
+			return buffer.getLong();
+		}
+
+		// byte 数组与 long 的相互转换
+		public static byte[] longToBytes(long x) {
+			ByteBuffer buffer = ByteBuffer.allocate(8);
+			buffer.putLong(0, x);
+			return buffer.array();
+		}
 
 	}
 

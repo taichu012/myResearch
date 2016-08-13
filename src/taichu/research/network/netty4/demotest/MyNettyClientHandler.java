@@ -36,7 +36,7 @@ public class MyNettyClientHandler extends ChannelInboundHandlerAdapter {
 //    	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>："+Delimiters.getLineDelimiterStrForWin();}
     	
     	return "Client.sendtime.ms=["+currTimeMs
-    	+"]=["+T.getDateTimeNow(currTimeMs)+"]"
+    	+"]=["+T.Time.getDateTimeNow(currTimeMs)+"]"
     	+"本行以rn结尾<如能解析为单独一行则说明rn被正确的用于行分解符了！>."+Delimiters.getLineDelimiterStrForWin();
     	}
     

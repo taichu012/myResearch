@@ -70,7 +70,7 @@ public class HttpClient {
 			long count=0l;
 			long t0 = System.nanoTime();
 			while (count<1000000000) {
-				msg = "MSGID=" + count + "," + T.getDateTimeNow();
+				msg = "MSGID=" + count + "," + T.Time.getDateTimeNow();
 				//use unpooled bytebuf
 				request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, HttpMethod.GET, uri.toASCIIString(),
 						Unpooled.wrappedBuffer(msg.getBytes("UTF-8")));
