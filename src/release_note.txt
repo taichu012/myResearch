@@ -39,6 +39,8 @@ REQ0020:实现基本的SMP协议，用netty收发smp消息达到约15KCAPS/10MBS
 		不做处理会发生未知错误，较难排查；
 REQ0021:将子项目VPRC单独用自己的release note开发和跟踪，从主research项目中独立；
 REQ0022：为eclipse增加了Pydev插件（需要eclipse4.5+至少Mars，及JDK8+）；并将srapytest爬虫程序托管到2个远端git上；
+REQ0023：优化工具类T，所有方法都放入某个静态子类，且静态子类可以不断内部继续嵌套静态孙类等；
+REQ0024：增加CRC8的工具类方法；
 
 
 
