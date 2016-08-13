@@ -7,21 +7,21 @@ import taichu.research.ai.freelogic.entity.cell.Cell;
 
 /**
  * @author ya
- * ��Ԫ��һ�㺬��һ����ͻ��������ͻ����Ȩ�أ���һ���嶯��ֵ����һЩ��ر仯�����ĳ�Ա������
+ * 神经元，一般含有一个轴突，若干树突（含权重），一个冲动阈值，及一些相关变化动作的成员函数。
  *
  */
 public class NerveCell extends Cell {
 	
-	//��Ԫ��һ����ͻ
+	//神经元有一个轴突
 	private Axon axon;
-	//TODO����Ԫ��������ͻ��������������ṹ������
+	//TODO：神经元有若干树突，用数组或其他结构描述。
 	private Dendrite[] dendrite[]=null;
 	
 	private static final long DEFAULT_IMPULSE_THRESHOLD = 100L;
 	private long ImpulseThreshold =  DEFAULT_IMPULSE_THRESHOLD;
 	
 
-	//������Ԫ�ĳ嶯��ֵ����һ������delta�������ɸ���������ֱ�����ã���SETXXX���á�
+	//调整神经元的冲动阈值，用一个增量delta（可正可负），方便直观设置，比SETXXX好用。
 	public void AdjustImpulseThreshold(long delta){
 		this.ImpulseThreshold += delta;
 	}
@@ -49,11 +49,11 @@ public class NerveCell extends Cell {
 
 	}
 	
-	//TODO ���ݱ���Ԫ����ͻ������ȷ���Ƿ�ἤ���񾭳嶯��������ͻ���ݸ��²���Ԫ��
+	//TODO 根据本神经元的树突输入来确定是否会激发神经冲动，经由轴突传递给下层神经元？
 	public void TryImpulse(){
 	
-		//TODO ׼��������ͻ����ͻ��powerȨ�أ���������ֵ���ж��Ƿ񼤷��嶯��
-		//������������źŴ��ݵ��²㣬�²㼶������TryImpulse���Ƿ��жϱ���Ԫ�����ġ�
+		//TODO 准备数据树突及树突的power权重，并按照阈值来判断是否激发冲动。
+		//如果激发，则信号传递到下层，下层级联的做TryImpulse，是否中断本神经元不关心。
 		
 	}
 	

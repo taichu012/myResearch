@@ -6,21 +6,20 @@ package taichu.research.ai.freelogic.relation;
 import taichu.research.ai.freelogic.entity.cell.nervecell.Axon;
 import taichu.research.ai.freelogic.entity.cell.nervecell.Dendrite;
 
-
 /**
  * @author ya
- * ����ָ��ͻ����ͻ�����ӣ�Ҳ��ָ�����źŴ��ݵķ���Ĭ����ͻ����ͻ��Ҳ����ͻ����ͻ
+ * 既是指轴突到树突的链接，也是指明了信号传递的方向。默认轴突到树突，也可树突到轴突
  */
 public class LinkAxon2Dendrite {
 	
-	//�źŷ�����ͻ����ͻ��Ĭ�ϡ�
+	//信号方向，轴突到树突，默认。
 	public static final boolean AXON_2_DENDRITE = true;
-	//�źŷ�����ͻ����ͻ�����٣�
+	//信号方向，树突到轴突，很少！
 	public static final boolean DENDRITE_2_AXON = true;
 	
 	private boolean impulseDirection = AXON_2_DENDRITE;
 	
-	//Ĭ����ͻ����ͻ������ǿ�ȣ�����Ԫ�ĳ嶯��ֵ�޹أ�
+	//默认轴突到树突的链接强度！和神经元的冲动阈值无关！
 	public static final long LINK_PAOWER_DEFAULT = 100L;
 	
 	private Axon axon =null;
