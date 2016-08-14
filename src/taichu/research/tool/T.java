@@ -518,6 +518,10 @@ public class T {
 	}
 
 	public static class Crc {
+		
+		public static class Crc32{
+			public static final String java_util_zip_CRC32_WaitForWrap="java.util.zip.CRC32 class need to be wrapped";
+		}
 
 		/**
 		 * CRC8 algorithm  encode: utf-8 
