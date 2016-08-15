@@ -15,6 +15,8 @@ public class SmpEncoder extends MessageToByteEncoder<Smp> {
 	
 	@Override
 	protected void encode(ChannelHandlerContext ctx, Smp msg, ByteBuf out) throws Exception {
+		
+		TlvEncoderHelper(out,msg);
 		//TODO：编码头部（HEAD）
 		out.writeByte(msg.getSmpFlag());
 		
