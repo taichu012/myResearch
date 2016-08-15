@@ -1,0 +1,47 @@
+﻿++++++++++++++++
+Release Notes:
+Author：taichu
+++++++++++++++++
+
+
+Ed0.0.1（2016-08-14）
+----------------------------
+REQ0001:实现了基本的SMP协议定义；
+REQ0002：根据SMP协议定义TLV字段，并实现Annotation来修饰TLV字段；
+
+Ed0.0.1（2016-08-15）
+----------------------------
+REQ0003:TODO；
+
+
+
+
+
+
+
+
+++++++++++++++++
+TODOLIST: 
+++++++++++++++++
+
+1.【ONGOING】开发：实现基本的TLV自动编解码框架;
+2.【OPEN】 对annotation解析来自动编解码；
+3.【OPEN】SMP消息实现CRC8/CRC16等checksum校验的算法；
+	（不用MD5，所以不用对MD5的32字节结果截取为8字节的“碰撞性”做测试，留待以后再测试。）
+4.【OPEN】SMP协议收发两方的桩模块可以考虑用redis的内存数据结构（key/value等）来做消息唯一ID的维护；
+	（说明：比如发送方设定唯一MSGID，接收方处理后返回response带着MSGID，发送方再次受到MSGID作为ack就删除redis的key；）
+5.【OPEN】SMP支持BODY部分的TLV SECTION可以是字符串String，考虑将JSON作为一个TLV Section发送；使用jackson JSON库；
+6.【OPEN】SMP消息测试的时候，考虑使用JAVA generator生成器（类似python/scala等语言）来自动生成数据；
+7.【OPEN】实现SMP的分层协议：
+	数据表示层：SMP协议的字段定义
+	网络传输层：netty字节流；SMP心跳协议；TLVCodec自动编解码；
+	实体控制层：SMP实现“regulate”调控接口，从而实现类似生物的激素调控机制来调控不同模块间（用smp协议沟通）的运行状态/速度等；
+			（比如：检测是否支持regulate接口；检测SMP协议版本；检测是否支持动态切换SMP协议；）
+
+
+
+
+
+	  
+	  
+	  

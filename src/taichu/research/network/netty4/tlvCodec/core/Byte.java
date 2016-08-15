@@ -1,7 +1,7 @@
 /**
  * 
  */
-package taichu.research.network.netty4.tlvCodec.annotation;
+package taichu.research.network.netty4.tlvCodec.core;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
