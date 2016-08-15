@@ -10,6 +10,9 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import taichu.research.network.netty4.tlvCodec.core.Byte;
+import taichu.research.network.netty4.tlvCodec.core.Byte.has;
+import taichu.research.network.netty4.tlvCodec.core.Tlv;
+import taichu.research.network.netty4.tlvCodec.core.Tlv.is;
 
 /**
  * 说明：
@@ -41,17 +44,17 @@ public class Smp {
 	//java的byte是-127到128，无法表达0x88（10001000），为程序方便将0x88存放到int的4字节最低字节，
 	//当写入网络字节流的时候使用函数“writeByte(int)"则会将4字节int的低8位作为1个byte写入网络，并字节增1，
 	//***详见annotation“Byte”的定义及说明；
-	@Byte //1字节为默认可不写出
+	@Byte//1字节为默认可不写出
 	public static final int SMP_FLAG = 0x88;//不允许更改，magic number
 	@Byte
 	public static final int SMP_VER = 0x10;//占1字节，用int4字节容器装值，writeByte写网络1字节
-	@Byte(2)
+	@Byte(has.B2)
 	private int SMP_HEAD_LEN = 0; //被动计算值
-	@Byte(4)
+	@Byte(has.B4)
 	private int SMP_MSG_ID = (int)System.nanoTime(); //TODO：考虑怎么使用随机数
-	@Byte(4)
+	@Byte(has.B4)
 	private int SMP_BODY_LEN = 0; //被动计算值；占2字节，用int4字节容器装值，writeShort写网络2字节
-	@Byte(3)
+	@Byte(has.B3)
 	public static final byte[] SMP_HEAD_RESERVED = new byte[]{0x00,0x00,0x00};
 	@Byte
 	private int SMP_HEAD_CHKSUM = 0x00;//被动计算值；占4字节，用int4字节容器装值，writeInt写网络4字节
@@ -64,7 +67,7 @@ public class Smp {
 	public static final int SMP_BODY_FLAG = 0x87;//不允许更改，magic number
 	@Byte
 	private int SMP_DATA_TOTAL = 0;
-	@Byte(2)
+	@Byte(has.B3)
 	public static final byte[] SMP_BODY_RESERVED = new byte[]{0x00,0x00,0x00};
 	
 	//定义DataType标识符
@@ -83,13 +86,18 @@ public class Smp {
 	
 	public final static class TlvSection {
 		@Byte
+		@Tlv(is.Type)
 		private int SMP_DATA_TYPE = SmpDataTypeDef.get(DATA_TYPE_ENUM.DT_STRING);
-		@Byte(2)
+		@Byte(has.B2)
+		@Tlv(is.Len)
 		private int SMP_DATA_LEN = 0;
 		//@Byte(-1)
 		//private byte[] SMP_DATA_VAL = null;
-		@Byte(-1)
+		@Byte(has.BObj)
+		@Tlv(is.Val)
 		private Object SMP_DATA_VAL = null;//保留value的指针，在需要的地方再统一构造tlv，复制字段，以防中间多次拷贝浪费时间；
+		
+		//构造函数
 		TlvSection(DATA_TYPE_ENUM dataType, Object value){
 			this.SMP_DATA_TYPE = SmpDataTypeDef.get(dataType);
 			this.SMP_DATA_VAL = value;

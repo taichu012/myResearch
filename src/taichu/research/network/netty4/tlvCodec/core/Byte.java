@@ -24,7 +24,7 @@ public @interface Byte {
 	 * 默认为1（可省略），-1为不定长，其他类似“@Byte(4)”
 	 * @return 返回字段的byte数，供后续codec使用.
 	 */
-	int value() default 1; //-1为不定长值 
+	has value() default has.B1; 
 	
 	/*
 	 * Field mapping & handling rules:
@@ -50,21 +50,21 @@ public @interface Byte {
 	 */
 	
 	
-	/*
+	/*  */
 	//定义数据类型的描述annotation，便于动态处理；
-	DataDef DD() default DataDef.B1;
+	//DataDef DD() default DataDef.B1;
 	//定义数据类型容器的描述annotation，便于动态处理；
-	DataContainer DC() default DataContainer.Int;
+	//DataContainer DC() default DataContainer.Int;
 	//定义数据类型的发送函数，只写其中低位若干字节；
-	DataWriter DW() default DataWriter.writeByte;
+	//DataWriter DW() default DataWriter.writeByte;
 
 	
 	//标记改数据类型实质上是几个字节
-	public static enum DataDef{B1,B2,B3,B4,B5,B6,B7,B8,B16,B32,BX} 
+	public static enum has {B1,B2,B3,B4,B5,B6,B7,B8,B16,B32,BX,B0,BObj}; 
 	//因为JAVA的数据类型无法完全满足要求，所以用接近但更大的type来包裹，但网络发送的时候只按需发送必要的有意义的低位若干字节；
-	public static enum DataContainer{Byte,Int,Long,String,Boolean,Bytes}
+	//public static enum DataContainer{FieldDef,Int,Long,String,Boolean,Bytes}
 	//依次为写入最低的1个字节，2个字节，4个字节，8个字节，更多的为字节数组
-	public static enum DataWriter{writeByte,writeShort,writeInt,writeLong,writeBytes}
+	//public static enum DataWriter{writeByte,writeShort,writeInt,writeLong,writeBytes}
 	
-		*/
+		
 }
