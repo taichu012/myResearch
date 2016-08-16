@@ -1,7 +1,7 @@
 /**
  * 
  */
-package taichu.research.network.netty4.tlvCodec.core;
+package taichu.research.network.netty4.tlvCodec.core.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -24,7 +24,7 @@ public @interface Byte {
 	 * 默认为1（可省略），-1为不定长，其他类似“@Byte(4)”
 	 * @return 返回字段的byte数，供后续codec使用.
 	 */
-	has value() default has.B1; 
+	int value() default 1; //-1为不定长字节数
 	
 	/*
 	 * Field mapping & handling rules:
@@ -60,7 +60,7 @@ public @interface Byte {
 
 	
 	//标记改数据类型实质上是几个字节
-	public static enum has {B1,B2,B3,B4,B5,B6,B7,B8,B16,B32,BX,B0,BObj}; 
+	//public static enum has {B1,B2,B3,B4,B5,B6,B7,B8,B16,B32,BX,B0,BObj}; 
 	//因为JAVA的数据类型无法完全满足要求，所以用接近但更大的type来包裹，但网络发送的时候只按需发送必要的有意义的低位若干字节；
 	//public static enum DataContainer{FieldDef,Int,Long,String,Boolean,Bytes}
 	//依次为写入最低的1个字节，2个字节，4个字节，8个字节，更多的为字节数组

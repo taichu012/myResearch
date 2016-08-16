@@ -935,7 +935,72 @@ public class T {
 			buffer.putLong(0, x);
 			return buffer.array();
 		}
+		
+		//TODO：可以按照byte[]和long的方法来增加对int，short等转换函数；
+		
+		public static void byteArrayCopy(byte[] srcByteArray, byte[] destByteArray){
+			System.arraycopy(srcByteArray, 0, destByteArray, 0, srcByteArray.length);
+		}
+		
+		/**
+		 * 
+		 * @param intValue 被转换的整形4字节
+		 * @param convertByteNbr 需要转换的字节数，只能是1,2,3,4（从低字节开始）
+		 * @return
+		 */
+		public static byte[] intToBytes(int intValue, int convertByteNbr) {
+			if (convertByteNbr<1||convertByteNbr>4){
+				log.warn("Convert from int to bytes failed, bad 'convertByteNbr'=["+convertByteNbr+"].");
+				return null;
+			}else {
+				byte[] bytes = new byte[convertByteNbr];
+				for (int i=0; i<convertByteNbr ; i++){
+					//按传入要求，依次转换最低，次低，次高，最高4个字节；
+					bytes[i]=(byte)((intValue >> i*8) & 0xff);
+				}
+				return bytes;
+			}
+			/*
+			 java中有三种移位运算符
+			<<左移运算符，num << 1,相当于num乘以2
+			>>右移运算符，num >> 1,相当于num除以2
+			>>>无符号右移，忽略符号位，空位都以0补齐
+			算法详见（http://zhidao.baidu.com/link?url=zR-koa1h0X38lFYjN6yWUPwwZQ_mbENFKAESnQkououYcxlQCVta1D6Z6fsOtwTGz9Uja-nzK09W8dEs5EXRb_）
+			 */
+		}
+		
+		/**
+		 * 
+		 * @param bytes 被转换的字节数组
+		 * @param convertByteNbr 需要转换的字节数，只能是1,2,3,4（从低字节开始）
+		 * @return
+		 */
+		public static int byte2int(byte[] bytes, int convertByteNbr) {
+			int outputBytesLen = 0;
+			if (convertByteNbr<1||convertByteNbr>4){
+				log.warn("Bad 'convertByteNbr'=["+convertByteNbr+"],必须在[1,4],按照实际字节数组长度转换，最大为4字节.");
+				outputBytesLen=bytes.length;
+			}else if(bytes.length==0) {
+				//空字节数组转换为int0
+				return 0;
+			}else if(bytes.length<convertByteNbr){
+				//如果要求转换的超过了字节数组的长度，则按照最高的转换；
+				log.warn("被转换的字节数组的长度("+bytes.length+")小于期望转换的字节数("+convertByteNbr+"),按实际字节数转换！");
+				outputBytesLen=bytes.length;
+			}else {
+				outputBytesLen=convertByteNbr;
+			}
+			
+			//开始字节数组向int转换
+			int genInt=0;
+			//TODO:这个算法有待研究！！！！ALERT!!!!
+			// 一个byte数据左移24位变成0x??000000，再右移8位变成0x00??0000 
+			int targets = (bytes[0] & 0xff) | ((bytes[1] << 8) & 0xff00) // | 表示安位或
+			| ((bytes[2] << 24) >>> 8) | (bytes[3] << 24);
+			
+			return genInt;
+			}
 
-	}
+		} 
 
 }

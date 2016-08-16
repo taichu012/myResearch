@@ -3,9 +3,11 @@ package taichu.research.network.netty4.tlvCodec.core;
 import java.lang.annotation.Annotation;
 import org.apache.log4j.Logger;
 
-public class TlvEncoder {
+import taichu.research.network.netty4.tlvCodec.core.annotation.Byte;
 
-	private static Logger log = Logger.getLogger(TlvEncoder.class);
+public class EncoderHelper {
+
+	private static Logger log = Logger.getLogger(EncoderHelper.class);
 
 	public static int getByteNbr(Object obj, String fieldName) throws NoSuchFieldException, SecurityException {
 		Annotation[] annotations;

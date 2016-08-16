@@ -1,4 +1,4 @@
-package taichu.research.network.netty4.tlvCodec.core;
+package taichu.research.network.netty4.tlvCodec.core.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,11 +9,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @Documented
-public @interface Tlv {
+public @interface TLV {
 	
-	is value();
+	IS value();
 
 	//定义TLV的三个内容
-	public static enum is {Type, Len, Val};
+	public static enum IS {Type, Length, Value};
 	
 }
