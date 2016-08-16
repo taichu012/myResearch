@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import taichu.research.network.netty4.tlvCodec.core.annotation.Byte;
 import taichu.research.network.netty4.tlvCodec.core.annotation.TLV;
 import taichu.research.network.netty4.tlvCodec.core.annotation.TLV.IS;
+import taichu.research.network.netty4.tlvCodec.protocol.smp.Smp.Tlv;
 import taichu.research.tool.T;
 
 /**
@@ -47,12 +48,12 @@ public class Smp {
 	@Byte
 	public static final byte SMP_VER = 0x10;//不允许更改，协议固定值
 	@Byte(2)
-	public static final byte[] SMP_HEAD_LEN = new byte[]{0x11,0x00};
+	public static final int SMP_HEAD_LEN = 16;
 	//public static final byte[] SMP_HEAD_LEN = T.Type.intToBytes(0x11,2); 不允许更改，协议固定值
 	@Byte(4)
-	private byte[] SMP_MSG_ID = new byte[4];//按需生成
+	private int SMP_MSG_ID = 0;//按需生成
 	@Byte(4)
-	private byte[] SMP_BODY_LEN = new byte[4];//按需生成
+	private int SMP_BODY_LEN = 0;//按需生成
 	@Byte(3)
 	public static final byte[] SMP_HEAD_RESERVED = new byte[]{0x00,0x00,0x00};
 	@Byte
@@ -64,11 +65,11 @@ public class Smp {
 	@Byte
 	public static final byte SMP_BODY_FLAG = 0x67;//不允许更改，协议固定值
 	@Byte
-	private byte SMP_DATA_TOTAL = 0;//按需生成
+	private int SMP_DATA_TOTAL = 0;//按需生成
 	@Byte(2)
 	public static final byte[] SMP_BODY_RESERVED = new byte[]{0x00,0x00};
 	@Byte(2)
-	private byte[] SMP_BODY_CHKSUM = new byte[]{0x00,0x00};
+	private int SMP_BODY_CHKSUM = 0;
 	
 	//根据SMP协议规定，TLV Section可重复多个；TLVCodec应能动态计算；
 	//根据SMP协议，并未定义TLV Section必须有固定次序，所以用HaspMap，可不排序，不保证次序；
@@ -77,17 +78,18 @@ public class Smp {
 	public final static class Tlv {
 		@Byte
 		@TLV(IS.Type)
-		private byte SMP_DATA_TYPE = 0;
+		public byte SMP_DATA_TYPE = 0;
 		@Byte(2)
 		@TLV(IS.Length)
-		private byte[] SMP_DATA_LEN = new byte[]{0x00,0x00};
+		public int SMP_DATA_LEN = 0;
 		@Byte(-1)
 		@TLV(IS.Value)
-		private byte[] SMP_DATA_VAL = null;//按需生成
+		public byte[] SMP_DATA_VAL = null;//按需生成
 		
 		//构造函数
 		Tlv(int type, byte[] value){
 			this.SMP_DATA_TYPE = (byte)type;
+			this.SMP_DATA_LEN = value.length;
 			T.Type.byteArrayCopy(value, this.SMP_DATA_VAL);
 			}
 	}
@@ -96,6 +98,7 @@ public class Smp {
 	//根据SMP协议，tlv字段的发送是不保证顺序的！
 	public Smp(HashMap<String, Tlv> tlvs){
 		this.resetAndSortTlvs(tlvs);
+		this.SMP_DATA_TOTAL=T.Type.intToBytes(tlvs.size(),1)[0];
 	}
 
 	private void resetAndSortTlvs(HashMap<String, Tlv> tlvs) {
@@ -129,19 +132,19 @@ public class Smp {
     	});
 	}
 	
-	public byte[] getSMP_MSG_ID() {
+	public int getSMP_MSG_ID() {
 		return SMP_MSG_ID;
 	}
 
-	public void setSMP_MSG_ID(byte[] sMP_MSG_ID) {
+	public void setSMP_MSG_ID(int sMP_MSG_ID) {
 		SMP_MSG_ID = sMP_MSG_ID;
 	}
 
-	public byte[] getSMP_BODY_LEN() {
+	public int getSMP_BODY_LEN() {
 		return SMP_BODY_LEN;
 	}
 
-	public void setSMP_BODY_LEN(byte[] sMP_BODY_LEN) {
+	public void setSMP_BODY_LEN(int sMP_BODY_LEN) {
 		SMP_BODY_LEN = sMP_BODY_LEN;
 	}
 
@@ -153,7 +156,7 @@ public class Smp {
 		SMP_HEAD_CHKSUM = sMP_HEAD_CHKSUM;
 	}
 
-	public byte getSMP_DATA_TOTAL() {
+	public int getSMP_DATA_TOTAL() {
 		return SMP_DATA_TOTAL;
 	}
 
@@ -161,11 +164,11 @@ public class Smp {
 		SMP_DATA_TOTAL = sMP_DATA_TOTAL;
 	}
 
-	public byte[] getSMP_BODY_CHKSUM() {
+	public int getSMP_BODY_CHKSUM() {
 		return SMP_BODY_CHKSUM;
 	}
 
-	public void setSMP_BODY_CHKSUM(byte[] sMP_BODY_CHKSUM) {
+	public void setSMP_BODY_CHKSUM(int sMP_BODY_CHKSUM) {
 		SMP_BODY_CHKSUM = sMP_BODY_CHKSUM;
 	}
 
@@ -185,7 +188,7 @@ public class Smp {
 		return SMP_VER;
 	}
 
-	public static byte[] getSmpHeadLen() {
+	public static int getSmpHeadLen() {
 		return SMP_HEAD_LEN;
 	}
 
