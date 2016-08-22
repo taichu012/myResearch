@@ -41,6 +41,9 @@ REQ0021:将子项目VPRC单独用自己的release note开发和跟踪，从主re
 REQ0022：为eclipse增加了Pydev插件（需要eclipse4.5+至少Mars，及JDK8+）；并将srapytest爬虫程序托管到2个远端git上；
 REQ0023：优化工具类T，所有方法都放入某个静态子类，且静态子类可以不断内部继续嵌套静态孙类等；
 REQ0024：增加CRC8的工具类方法；
+REQ0025：考虑到安卓APP的手机程序开发因为谷歌从eclipse转向IntelliJ，所以在IDE IntelliJ中维护，不放在本GIT仓库
+		考虑1：app开发和普通java开发还是有很多不同，所以分开git仓库维护
+		考虑2：谷歌原来默认提供的ADT（是基于eclipse的），现在提供的AndroidStudio（基于IntelliJ的）。
 
 
 
